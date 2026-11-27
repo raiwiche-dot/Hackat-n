@@ -32,7 +32,6 @@ export interface EventoLineaTiempo {
   carril: 'FIREWALL' | 'MEDSYS';
   usuarioToken: string;
   cuentaToken: string;
-  cuentaTecnicaReal: string; // Solo se revela en consola SOC mediante Break-Glass
   identidadAmbigua?: boolean;
   accion: string;
   detalle: string;
@@ -216,7 +215,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-D21470F4ED35',
         cuentaToken: 'ACC-DC30A0D39E5A',
-        cuentaTecnicaReal: 'WXY1210010',
         accion: 'SSH_PERMITIDO_22',
         detalle: '10.10.100.40 -> 10.10.100.30:22/tcp (Aplicacion=SSH, permitido).',
         severidad: 'ALTA',
@@ -228,7 +226,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-D21470F4ED35',
         cuentaToken: 'ACC-DC30A0D39E5A',
-        cuentaTecnicaReal: 'WXY1210010',
         accion: 'INGRESO SIST_MED_IESS',
         detalle: 'Origen MedSys 10:40:00 ajustado +12h por coincidencia exacta de actor/cuenta.',
         severidad: 'ALTA',
@@ -240,7 +237,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-D21470F4ED35',
         cuentaToken: 'ACC-DC30A0D39E5A',
-        cuentaTecnicaReal: 'WXY1210010',
         accion: 'DESCARGA EXITOSA',
         detalle: 'Origen MedSys 10:40:15 ajustado +12h. Descarga ejecutada 15s tras el ingreso.',
         severidad: 'CRITICA',
@@ -252,7 +248,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-D21470F4ED35',
         cuentaToken: 'ACC-DC30A0D39E5A',
-        cuentaTecnicaReal: 'WXY1210010',
         accion: 'EGRESS_8443_TCP',
         detalle: '10.10.100.40 -> 186.46.219[.]18:8443/tcp (Trafico_TCP_Desconocido, única IP pública).',
         severidad: 'CRITICA',
@@ -280,7 +275,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-000DE3FE2773',
         cuentaToken: 'ACC-79FE100B6B16',
-        cuentaTecnicaReal: 'XYZ1111331',
         accion: 'PROTOCOLO_SSH_BURST',
         detalle: '30 conexiones permitidas con Protocolo=="SSH" desde 10.10.100.50 hacia 10.10.100.30:22.',
         severidad: 'ALTA',
@@ -291,7 +285,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-000DE3FE2773',
         cuentaToken: 'ACC-79FE100B6B16',
-        cuentaTecnicaReal: 'XYZ1111331',
         accion: 'TRANFERENCIA EXITOSA / INTERRUMPIDA',
         detalle: '30 "TRANFERENCIA EXITOSA" + 2,970 "TRANFERENCIA INTERRUMPIDA" (typo original sin S).',
         severidad: 'CRITICA',
@@ -318,7 +311,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-5387F94B394C',
         cuentaToken: 'ACC-410762D420CB',
-        cuentaTecnicaReal: 'XYZ9999021',
         accion: 'TELNET_23_DENIED',
         detalle: '2,000 conexiones negadas desde 10.10.100.10 hacia 10.10.100.30:23 (Sesion_Incompleta).',
         severidad: 'ALTA',
@@ -329,7 +321,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-5387F94B394C',
         cuentaToken: 'ACC-410762D420CB',
-        cuentaTecnicaReal: 'XYZ9999021',
         accion: 'ACCESO FALLIDO',
         detalle: '2,000 eventos ACCESO FALLIDO registrados exactamente en la hora 00:xx de 2026-10-10.',
         severidad: 'ALTA',
@@ -357,7 +348,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-936EFE804AB3',
         cuentaToken: 'ACC-A9764DFB78FE',
-        cuentaTecnicaReal: 'RIMODE1',
         identidadAmbigua: true,
         accion: 'MULTI_PORT_SCAN_4X250',
         detalle: '10.10.100.20 -> 10.10.100.30: 250 NetBIOS (137), 250 SMBv1 (445), 250 RDP (3389), 250 BD (8471).',
@@ -369,7 +359,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-936EFE804AB3',
         cuentaToken: 'ACC-A9764DFB78FE',
-        cuentaTecnicaReal: 'RIMODE1',
         identidadAmbigua: true,
         accion: 'ACCESO FALLIDO (1,000 + 118)',
         detalle: 'Identidad ambigua (4 homónimos): resuelta por account_token + ventana 14:xx (+ 118 spraying).',
@@ -397,7 +386,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'FIREWALL',
         usuarioToken: 'USR-VARIOS-539',
         cuentaToken: 'ACC-877CD64A4EC0',
-        cuentaTecnicaReal: 'XYZ9999002 / MINAD / CMAP09002',
         accion: 'APP_SSH_826_Y_8443_811',
         detalle: '826 sesiones Aplicacion=SSH (puerto 22) + 811 sesiones puerto 8443 distribuidas en el mes.',
         severidad: 'ALTA',
@@ -408,7 +396,6 @@ export const campanasMock: CampanaDetalle[] = [
         carril: 'MEDSYS',
         usuarioToken: 'USR-MULTI-CUENTA',
         cuentaToken: 'ACC-4ED6B617541D',
-        cuentaTecnicaReal: 'MINAD / CMAP09002 / XYZ9999002',
         accion: 'PRIV_ESCALATION_Y_DOTLESS_IPS',
         detalle: '249 eventos nivel/reactivación, 1,098 activaciones, 826 reactivaciones espejo y 787 IPs sin puntos (100% en cuentas especiales).',
         severidad: 'CRITICA',

@@ -2,12 +2,11 @@ import { useState } from 'react';
 import type { SesionUsuario } from '../auth/rolesAuth';
 import { CheckIcon, DocumentCheckIcon, DownloadIcon, LockIcon, ShieldIcon } from '../components/AppIcons';
 import { resumenEjecutivoMedicoMock } from '../mocks/mockData';
-import { solicitarReportePorAudienciaApi } from '../services/apiClient';
+import { descargarArchivo, solicitarReportePorAudienciaApi } from '../services/apiClient';
 
 interface MedicalPortalPageProps {
   sesion: SesionUsuario;
   onCerrarSesion: () => void;
-  onRegistrarAuditoria: (tipoEvento: string, detalle: string, actorToken?: string) => void;
 }
 
 const etiquetaPrioridad: Record<'ALTA' | 'MEDIA' | 'CONTROLADA', string> = {
@@ -19,10 +18,10 @@ const etiquetaPrioridad: Record<'ALTA' | 'MEDIA' | 'CONTROLADA', string> = {
 export const MedicalPortalPage = ({
   sesion,
   onCerrarSesion,
-  onRegistrarAuditoria,
 }: MedicalPortalPageProps) => {
   const [descargando, setDescargando] = useState(false);
   const [mensajeDescarga, setMensajeDescarga] = useState('');
+  const [errorDescarga, setErrorDescarga] = useState('');
   const [accionesMarcadas, setAccionesMarcadas] = useState<Record<string, boolean>>({});
 
   const resumen = resumenEjecutivoMedicoMock;
@@ -34,26 +33,14 @@ export const MedicalPortalPage = ({
 
   const handleDescargarInformeMedico = async () => {
     setDescargando(true);
+    setMensajeDescarga('');
+    setErrorDescarga('');
     try {
-      const { blob, filename, desdeBackend } = await solicitarReportePorAudienciaApi(
-        'medical',
-        resumen.resumenSencillo
-      );
-      const url = URL.createObjectURL(blob);
-      const enlace = document.createElement('a');
-      enlace.href = url;
-      enlace.download = filename;
-      enlace.click();
-      URL.revokeObjectURL(url);
-
-      setMensajeDescarga(
-        `${filename} descargado (${desdeBackend ? 'generado en servidor local' : 'edición ejecutiva local'}).`
-      );
-      onRegistrarAuditoria(
-        'EXPORT_MEDICAL_PDF',
-        'Descarga de Informe Ejecutivo para Dirección Médica (fuentes externas).',
-        sesion.usuario
-      );
+      const archivo = await solicitarReportePorAudienciaApi('medical');
+      descargarArchivo(archivo);
+      setMensajeDescarga(`${archivo.filename} descargado del servidor local.`);
+    } catch (error) {
+      setErrorDescarga((error as Error).message);
     } finally {
       setDescargando(false);
     }
@@ -100,7 +87,7 @@ export const MedicalPortalPage = ({
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
             <div className="space-y-2">
               <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#0B5D46]">
-                Resumen del periodo: {resumen.periodoAnalizado}
+                Resumen del ejercicio: {resumen.periodoAnalizado}
               </p>
               <h2 className="text-2xl font-bold leading-snug text-[#073B2C] sm:text-3xl">
                 La atención médica opera con normalidad; se requiere revisar accesos internos del personal.
@@ -126,6 +113,7 @@ export const MedicalPortalPage = ({
             </div>
           </div>
 
+          {errorDescarga && <p role="alert" className="mt-4 text-rose-800">{errorDescarga}</p>}
           {mensajeDescarga && (
             <div className="mt-5 flex items-center gap-2.5 rounded-lg border border-[#CDE2D7] bg-[#E3F2EC] px-4 py-3 text-sm font-semibold text-[#063729]">
               <CheckIcon className="h-5 w-5 shrink-0 text-[#0B5D46]" />
@@ -292,6 +280,7 @@ export const MedicalPortalPage = ({
               <button
                 type="button"
                 onClick={handleDescargarInformeMedico}
+                disabled={descargando}
                 className="btn-touch min-h-[44px] w-full cursor-pointer rounded-lg border border-[#0B5D46]/35 bg-white px-4 py-2 text-sm font-bold text-[#0B5D46] hover:bg-[#E3F2EC] sm:w-auto"
               >
                 Descargar PDF

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { HourlyHeatmap24x31 } from '../components/HourlyHeatmap24x31';
-import { evidenciaIngestaMock } from '../mocks/mockData';
 import {
-  createDefaultHeatmap24x31,
-  dashboardSummaryFallback,
+  obtenerCampaignsApi,
+  type CampaignsApiResponse,
   obtenerDashboardSummaryApi,
   obtenerHourlyHeatmapApi,
   type DashboardSummaryResponse,
@@ -24,33 +23,31 @@ export const DashboardPage = ({
   onIrAuditoria,
   onVerLineaTiempo,
 }: DashboardPageProps = {}) => {
-  const [summary, setSummary] = useState<DashboardSummaryResponse>(
-    dashboardSummaryFallback
-  );
-  const [heatmap, setHeatmap] = useState<HourlyHeatmapResponse>(() =>
-    createDefaultHeatmap24x31()
-  );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null);
+  const [heatmap, setHeatmap] = useState<HourlyHeatmapResponse | null>(null);
+  const [escenarios, setEscenarios] = useState<CampaignsApiResponse['ipeScenarios'] | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    let active = true;
-    const loadData = async () => {
-      setLoading(true);
-      const [summaryRes, heatmapRes] = await Promise.all([
-        obtenerDashboardSummaryApi(),
-        obtenerHourlyHeatmapApi(),
-      ]);
-      if (!active) return;
-      setSummary(summaryRes);
-      setHeatmap(heatmapRes);
-      setLoading(false);
-    };
-    void loadData();
-    return () => {
-      active = false;
-    };
+    let vigente = true;
+    Promise.all([obtenerDashboardSummaryApi(), obtenerHourlyHeatmapApi(), obtenerCampaignsApi()])
+      .then(([resumen, mapa, campanas]) => {
+        if (!vigente) return;
+        setSummary(resumen);
+        setHeatmap(mapa);
+        setEscenarios(campanas.ipeScenarios);
+      })
+      .catch((fallo: Error) => {
+        if (vigente) setError(fallo.message);
+      });
+    return () => { vigente = false; };
   }, []);
 
+  if (!summary || !heatmap || !escenarios) {
+    return <p className="inst-panel p-4" role={error ? 'alert' : 'status'}>{error || 'Cargando telemetría…'}</p>;
+  }
+
+  const { generic, domain } = summary.ml;
   const totalMalformedFromSources = summary.bySource.reduce(
     (acc, item) => acc + (item.malformedIpEvents || 0),
     0
@@ -70,10 +67,7 @@ export const DashboardPage = ({
               FUENTES INTERNAS · POLARS STREAMING
             </span>
             <span className="rounded-md border border-[#CDE2D7] bg-[#F4FAF7] px-2.5 py-1 text-slate-600">
-              SHA-256 FW: <code className="font-bold text-[#063729]">{evidenciaIngestaMock.sha256Firewall.slice(0, 16)}...</code>
-            </span>
-            <span className="rounded-md border border-[#CDE2D7] bg-[#F4FAF7] px-2.5 py-1 text-slate-600">
-              SHA-256 MED: <code className="font-bold text-[#063729]">{evidenciaIngestaMock.sha256MedSys.slice(0, 16)}...</code>
+              Seudonimización: <strong>{summary.pseudonymizationRecorded === null ? 'Sin evidencia de ingesta' : summary.pseudonymizationRecorded ? 'Registrada' : 'Sin registrar'}</strong>
             </span>
           </div>
           <p className="text-sm leading-relaxed text-slate-700">
@@ -110,7 +104,7 @@ export const DashboardPage = ({
             Eventos Correlacionados
           </p>
           <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-[#063729] sm:text-4xl">
-            {loading ? '...' : summary.totalEvents.toLocaleString('es-EC')}
+            {summary.totalEvents.toLocaleString('es-EC')}
           </p>
           <p className="mt-3 border-t border-[#E6F1EC] pt-2.5 font-mono text-xs font-semibold text-[#0D6E52]">
             5,009,031 FW · 5,014,501 MedSys
@@ -122,7 +116,7 @@ export const DashboardPage = ({
             IPs Sin Puntos (^10\d&#123;9&#125;$)
           </p>
           <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-amber-700 sm:text-4xl">
-            {loading ? '...' : summary.malformedIpEvents.toLocaleString('es-EC')}
+            {summary.malformedIpEvents.toLocaleString('es-EC')}
           </p>
           <p className="mt-3 border-t border-[#E6F1EC] pt-2.5 font-mono text-xs text-slate-600">
             493 FW · 787 MedSys (100% esp.)
@@ -134,7 +128,7 @@ export const DashboardPage = ({
             Detección ML Sin Reglas
           </p>
           <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-[#0D6E52] sm:text-4xl">
-            {summary.ml.generic.incidentsInTopN} <span className="text-lg text-slate-400">→</span> {summary.ml.domain.incidentsInTopN}
+            {generic?.incidentsInTopN ?? '—'} <span className="text-lg text-slate-400">→</span> {domain?.incidentsInTopN ?? '—'}
           </p>
           <p className="mt-3 border-t border-[#E6F1EC] pt-2.5 font-mono text-xs text-slate-600">
             IsolationForest Genérico vs Dominio
@@ -146,7 +140,7 @@ export const DashboardPage = ({
             Cobertura UTC · Colisiones
           </p>
           <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-[#0B5D46] sm:text-4xl">
-            {summary.hoursCovered}h <span className="text-base text-amber-700">· 2,016 amb.</span>
+            {summary.hoursCovered} h
           </p>
           <p className="mt-3 border-t border-[#E6F1EC] pt-2.5 font-mono text-xs text-slate-600">
             31 días · 1 IP pública (186.46.219[.]18)
@@ -194,19 +188,19 @@ export const DashboardPage = ({
             <div className="rounded-lg border border-[#CDE2D7] bg-[#F8FCFA] p-3">
               <span className="block text-[11px] font-bold text-slate-500">MODELO GENÉRICO</span>
               <span className="mt-0.5 block text-sm font-bold text-[#073B2C]">
-                {summary.ml.generic.incidentsInTopN} (Top {summary.ml.generic.topN})
+                {generic ? `${generic.incidentsInTopN} (Top ${generic.topN})` : 'Sin métricas'}
               </span>
               <span className="mt-1 block text-xs text-slate-600">
-                No conf.: FW {summary.ml.generic.unconfirmedAnomalies.firewallHourly} / Med {summary.ml.generic.unconfirmedAnomalies.medsysHourly}
+                {generic && `No conf.: FW ${generic.unconfirmedAnomalies.firewallHourly} / Med ${generic.unconfirmedAnomalies.medsysHourly}`}
               </span>
             </div>
             <div className="rounded-lg border border-[#0B5D46]/30 bg-[#E3F2EC] p-3">
               <span className="block text-[11px] font-bold text-[#063729]">MODELO DOMINIO</span>
               <span className="mt-0.5 block text-sm font-bold text-[#0B5D46]">
-                {summary.ml.domain.incidentsInTopN} (Top {summary.ml.domain.topN})
+                {domain ? `${domain.incidentsInTopN} (Top ${domain.topN})` : 'Sin métricas'}
               </span>
               <span className="mt-1 block text-xs text-slate-700">
-                No conf.: FW {summary.ml.domain.unconfirmedAnomalies.firewallHourly} / Med {summary.ml.domain.unconfirmedAnomalies.medsysHourly}
+                {domain && `No conf.: FW ${domain.unconfirmedAnomalies.firewallHourly} / Med ${domain.unconfirmedAnomalies.medsysHourly}`}
               </span>
             </div>
           </div>
@@ -228,11 +222,11 @@ export const DashboardPage = ({
               <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
                 <span className="font-bold text-amber-900">ESCENARIO MÁS PROBABLE</span>
                 <span className="rounded-md border border-amber-300 bg-white px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
-                  CAMP-005 + 003 + 004
+                  {escenarios.mostProbable.campaignCodes.join(' · ')}
                 </span>
               </div>
               <p className="mt-2 text-sm leading-relaxed text-slate-700">
-                Abuso persistente en 16 cuentas especiales (787 IPs sin puntos, 826 reactivaciones, cambios de nivel) acompañado de fuerza bruta Telnet <code className="font-bold text-amber-900">23/tcp</code> y escaneo <code className="font-bold text-amber-900">137/445/3389/8471</code>.
+                {escenarios.mostProbable.description}
               </p>
             </article>
 
@@ -240,11 +234,11 @@ export const DashboardPage = ({
               <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
                 <span className="font-bold text-rose-900">ESCENARIO MÁS PELIGROSO</span>
                 <span className="rounded-md border border-rose-300 bg-white px-2.5 py-0.5 text-[11px] font-bold text-rose-800">
-                  005 → 001 + 002 (CRÍTICO)
+                  {escenarios.mostDangerous.campaignCodes.join(' · ')}
                 </span>
               </div>
               <p className="mt-2 text-sm leading-relaxed text-slate-700">
-                Cadena multifase con exfiltración hacia <code className="font-bold text-rose-900">186.46.219[.]18:8443</code> en 30s (+12h corregido) y transferencias masivas por <code className="font-bold text-rose-900">SSH</code> (30/2,970 en MedSys).
+                {escenarios.mostDangerous.description}
               </p>
             </article>
           </div>
@@ -252,7 +246,7 @@ export const DashboardPage = ({
       </div>
 
       {/* Mapa de calor 24x31 */}
-      <HourlyHeatmap24x31 heatmap={heatmap} loading={loading} />
+      <HourlyHeatmap24x31 heatmap={heatmap} />
     </div>
   );
 };

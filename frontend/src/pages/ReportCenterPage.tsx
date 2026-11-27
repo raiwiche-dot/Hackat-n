@@ -1,32 +1,49 @@
-import React, { useState } from 'react';
-import type { RegistroAuditoria, SeccionF11 } from '../mocks/mockData';
+import React, { useEffect, useState } from 'react';
+import type { SeccionF11 } from '../mocks/mockData';
 import {
+  descargarArchivo,
+  obtenerEventosAuditoriaApi,
   regenerarSeccionLlmApi,
   solicitarReportePorAudienciaApi,
   verificarCadenaAuditoriaApi,
 } from '../services/apiClient';
+import type { EventoAuditoriaApi } from '../services/apiClient';
 import { sanitizarCeldaCsv } from '../utils/csvSanitizer';
 import { CheckIcon, DocumentCheckIcon, DownloadIcon, ShieldIcon } from '../components/AppIcons';
 
 interface ReportCenterPageProps {
   secciones: SeccionF11[];
-  registrosAuditoria: RegistroAuditoria[];
-  onRegistrarEventoAuditoria: (tipoEvento: string, detalle: string) => void;
 }
 
 export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
   secciones,
-  registrosAuditoria,
-  onRegistrarEventoAuditoria,
 }) => {
-  const [conclusionActual, setConclusionActual] = useState(
-    secciones[7]?.resumen ??
-      'Migrar servicios 8470–8478 a TLS 9470–9476, deshabilitar Telnet 23/tcp y SMBv1 445/tcp, restringir egreso 8443/tcp y mantener auditoría hash-chain bajo LOPDP.'
-  );
+  const [conclusionActual, setConclusionActual] = useState('');
   const [regenerando, setRegenerando] = useState(false);
   const [descargando, setDescargando] = useState(false);
-  const [cadenaVerificada, setCadenaVerificada] = useState(true);
+  const [cadenaVerificada, setCadenaVerificada] = useState<boolean | null>(null);
   const [mensajeEstado, setMensajeEstado] = useState('');
+  const [errorEstado, setErrorEstado] = useState('');
+  const [errorAuditoria, setErrorAuditoria] = useState('');
+  const [registrosAuditoria, setRegistrosAuditoria] = useState<EventoAuditoriaApi[]>([]);
+  const [verificando, setVerificando] = useState(false);
+
+  const cargarAuditoria = async () => {
+    try {
+      setRegistrosAuditoria(await obtenerEventosAuditoriaApi());
+      setErrorAuditoria('');
+    } catch (error) {
+      setErrorAuditoria((error as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    let vigente = true;
+    obtenerEventosAuditoriaApi()
+      .then((eventos) => { if (vigente) setRegistrosAuditoria(eventos); })
+      .catch((error: Error) => { if (vigente) setErrorAuditoria(error.message); });
+    return () => { vigente = false; };
+  }, []);
   const [seccionActivaNum, setSeccionActivaNum] = useState<number>(8);
 
   const seccionActual =
@@ -34,14 +51,14 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
 
   const handleRegenerarConclusion = async () => {
     setRegenerando(true);
+    setMensajeEstado('');
+    setErrorEstado('');
     try {
-      const respuesta = await regenerarSeccionLlmApi(8);
-      setConclusionActual(respuesta.texto);
+      const respuesta = await regenerarSeccionLlmApi();
+      setConclusionActual(respuesta.text);
       setMensajeEstado('Sección 8 regenerada localmente con Ollama.');
-      onRegistrarEventoAuditoria(
-        'LLM_LOCAL_REGENERATE',
-        'Regeneración local de Sección 8 con Ollama sobre payload allowlist.'
-      );
+    } catch (error) {
+      setErrorEstado((error as Error).message);
     } finally {
       setRegenerando(false);
     }
@@ -49,54 +66,48 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
 
   const handleDescargarPdfTecnico = async () => {
     setDescargando(true);
+    setMensajeEstado('');
+    setErrorEstado('');
     try {
-      const { blob, filename } = await solicitarReportePorAudienciaApi(
-        'technical',
-        conclusionActual
-      );
-      const url = URL.createObjectURL(blob);
-      const enlace = document.createElement('a');
-      enlace.href = url;
-      enlace.download = filename;
-      enlace.click();
-      URL.revokeObjectURL(url);
-
-      setMensajeEstado(`${filename} (Reporte Técnico F-11) descargado.`);
-      onRegistrarEventoAuditoria(
-        'EXPORT_TECHNICAL_F11_PDF',
-        'Descarga de Reporte Técnico CTI (Ficha F-11, audiencia=technical).'
-      );
+      const archivo = await solicitarReportePorAudienciaApi('technical', conclusionActual);
+      descargarArchivo(archivo);
+      setMensajeEstado(`${archivo.filename} descargado del servidor local.`);
+      setCadenaVerificada(null);
+      await cargarAuditoria();
+    } catch (error) {
+      setErrorEstado((error as Error).message);
     } finally {
       setDescargando(false);
     }
   };
 
   const handleExportarAuditoriaCsv = () => {
-    const encabezados = ['ID', 'Timestamp', 'TipoEvento', 'ActorToken', 'Detalle', 'HashPrevio', 'HashActual'];
+    const encabezados = ['ID', 'Timestamp', 'Operación', 'Dataset', 'SHA-256'];
     const filas = registrosAuditoria.map((r) =>
-      [r.id, r.timestamp, r.tipoEvento, r.actorToken, r.detalle, r.hashPrevio, r.hashActual]
+      [String(r.auditId), r.executedAt ?? '', r.operation, r.datasetName ?? '', r.rowHash]
         .map(sanitizarCeldaCsv)
         .join(',')
     );
     const csvContenido = [encabezados.map(sanitizarCeldaCsv).join(','), ...filas].join('\n');
-    const blob = new Blob([csvContenido], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const enlace = document.createElement('a');
-    enlace.href = url;
-    enlace.download = 'cti_audit_hashchain_sanitizado.csv';
-    enlace.click();
-    URL.revokeObjectURL(url);
+    descargarArchivo({
+      blob: new Blob([csvContenido], { type: 'text/csv;charset=utf-8;' }),
+      filename: 'cti_audit_hashchain_sanitizado.csv',
+    });
     setMensajeEstado('Bitácora exportada en CSV con protección contra Formula Injection.');
   };
 
   const handleVerificarHashChain = async () => {
-    const res = await verificarCadenaAuditoriaApi(registrosAuditoria);
-    setCadenaVerificada(res.valida);
-    setMensajeEstado(
-      res.valida
-        ? 'Hash-Chain verificada: 0 alteraciones en cti_audit.audit_events.'
-        : 'Alerta: discrepancia en la cadena SHA-256.'
-    );
+    setVerificando(true);
+    setErrorAuditoria('');
+    try {
+      const resultado = await verificarCadenaAuditoriaApi();
+      setCadenaVerificada(resultado.intact);
+    } catch (error) {
+      setCadenaVerificada(null);
+      setErrorAuditoria((error as Error).message);
+    } finally {
+      setVerificando(false);
+    }
   };
 
   return (
@@ -109,7 +120,7 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
               <span>REPORTE TÉCNICO CTI · FICHA F-11 (8/8 SECCIONES · TLP:RED)</span>
             </div>
             <p className="mt-1 text-sm text-slate-700">
-              Documento técnico completo para SOC/CSIRT (separado del Informe Ejecutivo Médico).
+              Consulta la estructura del informe y descarga el documento completo generado por el servidor.
             </p>
           </div>
 
@@ -150,9 +161,6 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
                   }`}
                 >
                   <span>{sec.numero}. {sec.titulo}</span>
-                  <span className="shrink-0 rounded-md border border-[#CDE2D7] bg-[#E3F2EC] px-2 py-0.5 font-mono text-[11px] font-bold text-[#063729]">
-                    OK
-                  </span>
                 </button>
               );
             })}
@@ -173,7 +181,7 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
 
             <div>
               <label htmlFor="editor-conclusion" className="block font-mono text-xs font-bold text-[#073B2C]">
-                Conclusión técnica Sección 8 (editable antes de compilar F-11)
+                Conclusión de Ollama · se adjunta como nota al PDF técnico
               </label>
               <textarea
                 id="editor-conclusion"
@@ -184,6 +192,7 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
               />
             </div>
 
+            {errorEstado && <p role="alert" className="text-rose-800">{errorEstado}</p>}
             {mensajeEstado && (
               <div className="flex items-center gap-2 rounded-lg border border-[#CDE2D7] bg-[#E3F2EC] px-4 py-2.5 font-mono text-xs font-semibold text-[#063729]">
                 <CheckIcon className="h-4 w-4 shrink-0 text-[#0B5D46]" />
@@ -207,7 +216,7 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
                   : 'border-rose-300 bg-rose-50 text-rose-800'
               }`}
             >
-              {cadenaVerificada ? 'HASH-CHAIN ÍNTEGRO' : 'REVISAR CADENA'}
+              {cadenaVerificada === null ? 'VERIFICACIÓN PENDIENTE' : cadenaVerificada ? 'HASH-CHAIN ÍNTEGRO' : 'REVISAR CADENA'}
             </span>
           </div>
 
@@ -215,13 +224,15 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
             <button
               type="button"
               onClick={handleVerificarHashChain}
+              disabled={verificando}
               className="btn-touch min-h-[42px] w-full cursor-pointer rounded-lg border border-[#CDE2D7] bg-[#E3F2EC] px-4 py-2 text-xs font-bold text-[#063729] hover:bg-[#0B5D46] hover:text-white sm:w-auto"
             >
-              Verificar Hash-Chain
+              {verificando ? 'Verificando…' : 'Verificar Hash-Chain'}
             </button>
             <button
               type="button"
               onClick={handleExportarAuditoriaCsv}
+              disabled={registrosAuditoria.length === 0 || Boolean(errorAuditoria)}
               className="btn-touch min-h-[42px] w-full cursor-pointer rounded-lg border border-[#CDE2D7] bg-white px-4 py-2 text-xs font-bold text-[#063729] hover:border-[#0B5D46] hover:bg-[#F4FAF7] sm:w-auto"
             >
               Exportar CSV sanitizado
@@ -229,6 +240,7 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
           </div>
         </div>
 
+        {errorAuditoria && <p role="alert" className="px-4 py-2 text-rose-800">{errorAuditoria}</p>}
         <div className="overflow-x-auto">
           <table className="w-full text-left font-mono text-xs sm:text-sm">
             <thead className="border-b border-[#CDE2D7] bg-[#F8FCFA] text-xs text-slate-600">
@@ -236,19 +248,19 @@ export const ReportCenterPage: React.FC<ReportCenterPageProps> = ({
                 <th className="px-3.5 py-2.5">ID</th>
                 <th className="px-3.5 py-2.5">TIMESTAMP</th>
                 <th className="px-3.5 py-2.5">OPERACIÓN</th>
-                <th className="px-3.5 py-2.5">DETALLE</th>
-                <th className="px-3.5 py-2.5">PREV → ROW HASH</th>
+                <th className="px-3.5 py-2.5">DATASET</th>
+                <th className="px-3.5 py-2.5">ROW HASH</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E6F1EC]">
               {registrosAuditoria.map((reg) => (
-                <tr key={reg.id} className="hover:bg-[#F8FCFA]">
-                  <td className="px-3.5 py-2.5 font-bold text-[#0B5D46]">{reg.id}</td>
-                  <td className="whitespace-nowrap px-3.5 py-2.5 text-slate-600">{reg.timestamp}</td>
-                  <td className="whitespace-nowrap px-3.5 py-2.5 font-bold text-[#073B2C]">{reg.tipoEvento}</td>
-                  <td className="px-3.5 py-2.5 font-sans text-sm text-slate-700">{reg.detalle}</td>
+                <tr key={reg.auditId} className="hover:bg-[#F8FCFA]">
+                  <td className="px-3.5 py-2.5 font-bold text-[#0B5D46]">{reg.auditId}</td>
+                  <td className="whitespace-nowrap px-3.5 py-2.5 text-slate-600">{reg.executedAt ?? '—'}</td>
+                  <td className="whitespace-nowrap px-3.5 py-2.5 font-bold text-[#073B2C]">{reg.operation}</td>
+                  <td className="px-3.5 py-2.5 font-sans text-sm text-slate-700">{reg.datasetName ?? '—'}</td>
                   <td className="whitespace-nowrap px-3.5 py-2.5 text-xs font-semibold text-[#0D6E52]">
-                    {reg.hashPrevio.slice(0, 8)} → {reg.hashActual.slice(0, 8)}
+                    {reg.rowHash}
                   </td>
                 </tr>
               ))}

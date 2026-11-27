@@ -67,17 +67,23 @@ export const CampaignsApiPanel = ({
     const [data, setData] = useState<CampaignsApiResponse>(campaignsApiFallback);
     const [selectedCode, setSelectedCode] = useState<string>('CAMP-2026-001');
     const [loading, setLoading] = useState<boolean>(true);
+    const [campaignError, setCampaignError] = useState('');
 
     const [timeline, setTimeline] = useState<CampaignTimelineResponse | null>(null);
-    const [timelineNotFound, setTimelineNotFound] = useState<boolean>(false);
+    const [timelineError, setTimelineError] = useState('');
     const [loadingTimeline, setLoadingTimeline] = useState<boolean>(false);
 
     useEffect(() => {
         let active = true;
         const load = async () => {
             setLoading(true);
-            const res = await obtenerCampaignsApi();
+            const res = await obtenerCampaignsApi().catch((error: Error) => {
+                if (active) setCampaignError(error.message);
+                return null;
+            });
             if (!active) return;
+            setLoading(false);
+            if (!res) return;
             setData(res);
             const hasDefault = res.campaigns.some(
                 (c) => c.campaignCode === 'CAMP-2026-001'
@@ -87,7 +93,6 @@ export const CampaignsApiPanel = ({
             } else if (res.campaigns[0]) {
                 setSelectedCode(res.campaigns[0].campaignCode);
             }
-            setLoading(false);
         };
         void load();
         return () => {
@@ -96,10 +101,11 @@ export const CampaignsApiPanel = ({
     }, []);
 
     const currentCampaign =
-        data.campaigns.find((c) => c.campaignCode === selectedCode) ??
-        data.campaigns[0];
+        !loading && !campaignError
+            ? data.campaigns.find((c) => c.campaignCode === selectedCode) ?? data.campaigns[0]
+            : undefined;
 
-    const activeCode = currentCampaign?.campaignCode ?? selectedCode;
+    const activeCode = currentCampaign?.campaignCode;
 
     useEffect(() => {
         if (!activeCode) return;
@@ -107,11 +113,13 @@ export const CampaignsApiPanel = ({
 
         const loadTimeline = async () => {
             setLoadingTimeline(true);
-            setTimelineNotFound(false);
-            const res = await obtenerTimelineCampanaApi(activeCode);
+            setTimelineError('');
+            const res = await obtenerTimelineCampanaApi(activeCode).catch((error: Error) => {
+                if (active) setTimelineError(error.message);
+                return null;
+            });
             if (!active) return;
-            setTimelineNotFound(res.notFound);
-            setTimeline(res.data);
+            setTimeline(res);
             setLoadingTimeline(false);
         };
 
@@ -145,6 +153,10 @@ export const CampaignsApiPanel = ({
 
     const hasCampaignSkew = Boolean(timeline?.clockSkewAdjusted);
     const esTecnico = modoLectura === 'tecnico';
+
+    if (loading || campaignError || !activeCode) {
+        return <p role={campaignError ? 'alert' : 'status'}>{campaignError || (loading ? 'Cargando campañas…' : 'No hay campañas disponibles.')}</p>;
+    }
 
     return (
         <section className="space-y-4 bg-[#0b0f17] text-slate-200">
@@ -323,9 +335,9 @@ export const CampaignsApiPanel = ({
                     </div>
                 </div>
 
-                {timelineNotFound ? (
-                    <div className="mt-3 rounded-xs border border-rose-900/70 bg-[#0b0f17] p-3 text-xs text-rose-300">
-                        Campaña no encontrada
+                {timelineError ? (
+                    <div role="alert" className="mt-3 rounded-xs border border-rose-900/70 bg-[#0b0f17] p-3 text-xs text-rose-300">
+                        {timelineError}
                     </div>
                 ) : (timeline?.events.length ?? 0) === 0 ? (
                     <p className="mt-3 text-xs text-slate-400">
@@ -368,10 +380,9 @@ export const CampaignsApiPanel = ({
                                         <span className="text-[11px] text-slate-500">#{idx + 1}</span>
                                     </div>
 
-                                    {(ev.action || ev.detail) && (
+                                    {ev.summary && (
                                         <p className="mt-1.5 text-slate-300">
-                                            {ev.action ? `${ev.action}: ` : ''}
-                                            {ev.detail ?? ''}
+                                            {ev.summary}
                                         </p>
                                     )}
 

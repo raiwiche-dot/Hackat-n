@@ -1,16 +1,4 @@
-import {
-  auditoriaInicialMock,
-  campanasMock,
-  evidenciaIngestaMock,
-  generarMatrizHeatmapRealistaMock,
-  seccionesF11Mock,
-  resumenEjecutivoMedicoMock,
-} from '../mocks/mockData';
-import type { CampanaId, RegistroAuditoria } from '../mocks/mockData';
-import {
-  generarPdfEjecutivoMedicoBlob,
-  generarPdfTecnicoF11Blob,
-} from '../utils/pdfGenerator';
+import { campanasMock, generarMatrizHeatmapRealistaMock } from '../mocks/mockData';
 
 export interface EstadoSaludApi {
   postgresReady: boolean;
@@ -40,10 +28,10 @@ export interface DashboardSummaryResponse {
   malformedIpEvents: number;
   hoursCovered: number;
   bySource: SourceSummaryItem[];
-  pseudonymizationRecorded: boolean;
+  pseudonymizationRecorded: boolean | null;
   ml: {
-    generic: MlVariantSummary;
-    domain: MlVariantSummary;
+    generic: MlVariantSummary | null;
+    domain: MlVariantSummary | null;
   };
 }
 
@@ -60,6 +48,7 @@ export interface CampaignMitreItem {
 }
 
 export interface CampaignIndicators {
+  ports?: number[];
   sourceIps?: string[];
   destinationIps?: string[];
   actorTokens?: string[];
@@ -72,7 +61,8 @@ export interface CampaignRecord {
   title: string;
   adversaryType: string;
   severity: string;
-  admiraltyRating?: string;
+  admiraltyRating?: string | null;
+  eventCount?: number | null;
   anomalyScore: number | null;
   mitreTechniques: CampaignMitreItem[];
   iocs?: CampaignIndicators | string[];
@@ -95,13 +85,12 @@ export interface CampaignsApiResponse {
 }
 
 export interface CampaignTimelineEvent {
-  id?: string;
+  id: number;
   timestamp: string;
   source: 'FIREWALL' | 'MEDSYS' | string;
-  actorToken?: string;
-  accountToken?: string;
-  action?: string;
-  detail?: string;
+  actorToken: string | null;
+  accountToken: string | null;
+  summary: string | null;
   clockSkewAdjusted?: boolean;
   [key: string]: unknown;
 }
@@ -159,9 +148,11 @@ export const campaignsApiFallback: CampaignsApiResponse = {
     adversaryType: c.id === 'CAMP-2026-001' ? 'HYBRID' : c.id === 'CAMP-2026-002' || c.id === 'CAMP-2026-005' ? 'INSIDER_THREAT' : 'EXTERNAL_ACTOR',
     severity: c.severidad,
     admiraltyRating: c.admiralty,
+    eventCount: c.volumenEventos,
     anomalyScore: c.id === 'CAMP-2026-001' ? 0.985 : 0.93,
     mitreTechniques: [],
     iocs: {
+      ports: c.puertos,
       sourceIps: [c.ipOrigenFw],
       destinationIps: [c.ipDestinoFw],
       actorTokens: c.eventos.map((e) => e.usuarioToken),
@@ -191,391 +182,180 @@ export function createDefaultHeatmap24x31(): HourlyHeatmapResponse {
 }
 
 export function estaEnModoMock(): boolean {
-  return import.meta.env.VITE_USE_MOCKS !== 'false';
+  return import.meta.env.VITE_USE_MOCKS === 'true';
 }
 
-async function fetchRelativoConFallback<T>(
-  rutaRelativa: string,
-  fallback: T,
-  init?: RequestInit
-): Promise<{ data: T; okRed: boolean }> {
-  if (estaEnModoMock()) {
-    return { data: fallback, okRed: true };
-  }
+export async function solicitarApi<T>(ruta: string, mensaje: string, init?: RequestInit): Promise<T> {
+  const respuesta = await consultarApi(ruta, mensaje, init);
+  return respuesta.json() as Promise<T>;
+}
 
+async function consultarApi(ruta: string, mensaje: string, init?: RequestInit): Promise<Response> {
+  let respuesta: Response;
   try {
-    const respuesta = await fetch(rutaRelativa, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(init?.headers || {}),
-      },
-      ...init,
-    });
-
-    if (!respuesta.ok) {
-      return { data: fallback, okRed: false };
-    }
-
-    const json = (await respuesta.json()) as T;
-    return { data: json, okRed: true };
+    respuesta = await fetch(ruta, init);
   } catch {
-    return { data: fallback, okRed: false };
+    throw new Error(mensaje);
   }
+
+  if (!respuesta.ok) {
+    const cuerpo = await respuesta.json().catch(() => null) as { detail?: unknown } | null;
+    throw new Error(typeof cuerpo?.detail === 'string' ? cuerpo.detail : `${mensaje} (HTTP ${respuesta.status})`);
+  }
+  return respuesta;
 }
+
+export const saludNoDisponible: EstadoSaludApi = {
+  postgresReady: false,
+  ollamaReady: false,
+  zeroEgress: false,
+  apiDisponible: false,
+};
 
 export async function obtenerEstadoSaludApi(): Promise<EstadoSaludApi> {
-  if (estaEnModoMock()) {
-    return saludEjemploMock;
+  if (estaEnModoMock()) return saludEjemploMock;
+  try {
+    const estado = await solicitarApi<Omit<EstadoSaludApi, 'apiDisponible'>>('/api/v1/health', 'API no disponible.');
+    return { ...estado, apiDisponible: true };
+  } catch {
+    return saludNoDisponible;
   }
-
-  const res = await fetchRelativoConFallback<{
-    postgresReady?: boolean;
-    ollamaReady?: boolean;
-    zeroEgress?: boolean;
-  }>('/api/v1/health', {});
-
-  if (!res.okRed) {
-    return {
-      postgresReady: false,
-      ollamaReady: false,
-      zeroEgress: false,
-      apiDisponible: false,
-    };
-  }
-
-  return {
-    postgresReady: Boolean(res.data.postgresReady),
-    ollamaReady: Boolean(res.data.ollamaReady),
-    zeroEgress: Boolean(res.data.zeroEgress),
-    apiDisponible: true,
-  };
 }
 
 export async function obtenerDashboardSummaryApi(): Promise<DashboardSummaryResponse> {
-  const res = await fetchRelativoConFallback<Partial<DashboardSummaryResponse>>(
-    '/api/v1/dashboard/summary',
-    dashboardSummaryFallback
-  );
-
-  const raw = res.data;
-  const bySource =
-    Array.isArray(raw.bySource) && raw.bySource.length > 0
-      ? raw.bySource
-      : dashboardSummaryFallback.bySource;
-
-  return {
-    totalEvents:
-      typeof raw.totalEvents === 'number'
-        ? raw.totalEvents
-        : dashboardSummaryFallback.totalEvents,
-    malformedIpEvents:
-      typeof raw.malformedIpEvents === 'number'
-        ? raw.malformedIpEvents
-        : dashboardSummaryFallback.malformedIpEvents,
-    hoursCovered:
-      typeof raw.hoursCovered === 'number'
-        ? raw.hoursCovered
-        : dashboardSummaryFallback.hoursCovered,
-    bySource,
-    pseudonymizationRecorded:
-      typeof raw.pseudonymizationRecorded === 'boolean'
-        ? raw.pseudonymizationRecorded
-        : dashboardSummaryFallback.pseudonymizationRecorded,
-    ml: {
-      generic: raw.ml?.generic ?? dashboardSummaryFallback.ml.generic,
-      domain: raw.ml?.domain ?? dashboardSummaryFallback.ml.domain,
-    },
-  };
+  if (estaEnModoMock()) return dashboardSummaryFallback;
+  return solicitarApi('/api/v1/dashboard/summary', 'No se pudo cargar el resumen.');
 }
 
 export async function obtenerHourlyHeatmapApi(): Promise<HourlyHeatmapResponse> {
-  const fallback = createDefaultHeatmap24x31();
-  const res = await fetchRelativoConFallback<Partial<HourlyHeatmapResponse>>(
-    '/api/v1/analytics/hourly-heatmap',
-    fallback
-  );
-
-  const hours =
-    Array.isArray(res.data.hours) && res.data.hours.length === 24
-      ? res.data.hours
-      : fallback.hours;
-  const days =
-    Array.isArray(res.data.days) && res.data.days.length === 31
-      ? res.data.days
-      : fallback.days;
-  const matrix =
-    Array.isArray(res.data.matrix) && res.data.matrix.length > 0
-      ? res.data.matrix
-      : fallback.matrix;
-
-  return { hours, days, matrix };
+  if (estaEnModoMock()) return createDefaultHeatmap24x31();
+  const mapa = await solicitarApi<{
+    hours: Array<number | string>;
+    days: string[];
+    matrix: number[][];
+  }>('/api/v1/analytics/hourly-heatmap', 'No se pudo cargar el mapa horario.');
+  return { ...mapa, hours: mapa.hours.map((hora) => String(hora).padStart(2, '0')) };
 }
 
 export async function obtenerCampaignsApi(): Promise<CampaignsApiResponse> {
-  const res = await fetchRelativoConFallback<Record<string, unknown>>(
-    '/api/v1/campaigns',
-    campaignsApiFallback as unknown as Record<string, unknown>
-  );
-
-  const raw = res.data;
-  const rawCampaigns = Array.isArray(raw.campaigns)
-    ? (raw.campaigns as Record<string, unknown>[])
-    : campaignsApiFallback.campaigns;
-
-  const campaigns: CampaignRecord[] = rawCampaigns.map((item, idx) => {
-    const code =
-      typeof item.campaignCode === 'string' && item.campaignCode.trim()
-        ? item.campaignCode.trim()
-        : `CAMP-2026-${String(idx + 1).padStart(3, '0')}`;
-
-    const title =
-      typeof item.title === 'string' && item.title.trim() ? item.title.trim() : code;
-
-    const rawScore = item.anomalyScore;
-    const anomalyScore =
-      typeof rawScore === 'number' && Number.isFinite(rawScore) ? rawScore : null;
-
-    const mitreRaw = Array.isArray(item.mitreTechniques) ? item.mitreTechniques : [];
-    const mitreTechniques: CampaignMitreItem[] = mitreRaw.map((t, tIdx) => {
-      if (typeof t === 'string') {
-        return { id: t, name: t };
-      }
-      const obj = (t ?? {}) as Record<string, unknown>;
-      return {
-        id: typeof obj.id === 'string' ? obj.id : `T-${tIdx + 1}`,
-        name: typeof obj.name === 'string' ? obj.name : 'Técnica registrada',
-        tactic: typeof obj.tactic === 'string' ? obj.tactic : undefined,
-      };
-    });
-
-    const ioas = Array.isArray(item.ioas) ? item.ioas.map((x) => String(x)) : [];
-
-    return {
-      campaignCode: code,
-      title,
-      adversaryType:
-        typeof item.adversaryType === 'string' ? item.adversaryType : 'NO_ESPECIFICADO',
-      severity: typeof item.severity === 'string' ? item.severity : 'MEDIA',
-      admiraltyRating:
-        typeof item.admiraltyRating === 'string' ? item.admiraltyRating : 'N/A',
-      anomalyScore,
-      mitreTechniques,
-      iocs:
-        (item.iocs as CampaignIndicators | string[] | undefined) ?? {
-          sourceIps: [],
-          destinationIps: [],
-          actorTokens: [],
-          accountTokens: [],
-        },
-      ioas,
-      summary: typeof item.summary === 'string' ? item.summary : undefined,
-    };
-  });
-
-  const rawIpe = (raw.ipeScenarios ?? {}) as Record<string, unknown>;
-  const rawProbable = (rawIpe.mostProbable ?? rawIpe.masProbable ?? {}) as Record<
-    string,
-    unknown
-  >;
-  const rawDangerous = (rawIpe.mostDangerous ?? rawIpe.masPeligroso ?? {}) as Record<
-    string,
-    unknown
-  >;
-
-  const parseCodes = (val: unknown, fallbackCodes: string[]): string[] =>
-    Array.isArray(val) ? val.map((c) => String(c)) : fallbackCodes;
+  if (estaEnModoMock()) return campaignsApiFallback;
+  const respuesta = await solicitarApi<{
+    campaigns: Array<Omit<CampaignRecord, 'mitreTechniques'> & { mitreTechniques: string[] }>;
+    ipeScenarios: Array<IpeScenarioBlock & { code: string; name: string }>;
+  }>('/api/v1/campaigns', 'No se pudieron cargar las campañas.');
+  const escenario = (code: string): IpeScenarioBlock => {
+    const item = respuesta.ipeScenarios.find((valor) => valor.code === code);
+    return item ? { ...item, label: item.name } : { description: 'Sin datos', campaignCodes: [] };
+  };
 
   return {
-    campaigns: campaigns.length > 0 ? campaigns : campaignsApiFallback.campaigns,
+    campaigns: respuesta.campaigns.map((campana) => ({
+      ...campana,
+      title: campana.title || campana.campaignCode,
+      severity: campana.severity || 'Sin clasificar',
+      mitreTechniques: campana.mitreTechniques.map((id) => ({ id, name: id })),
+    })),
     ipeScenarios: {
-      mostProbable: {
-        label: 'Escenario Más Probable',
-        description:
-          typeof rawProbable.description === 'string'
-            ? rawProbable.description
-            : typeof rawProbable.descripcion === 'string'
-              ? rawProbable.descripcion
-              : campaignsApiFallback.ipeScenarios.mostProbable.description,
-        campaignCodes: parseCodes(
-          rawProbable.campaignCodes ?? rawProbable.campanas,
-          campaignsApiFallback.ipeScenarios.mostProbable.campaignCodes
-        ),
-      },
-      mostDangerous: {
-        label: 'Escenario Más Peligroso',
-        description:
-          typeof rawDangerous.description === 'string'
-            ? rawDangerous.description
-            : typeof rawDangerous.descripcion === 'string'
-              ? rawDangerous.descripcion
-              : campaignsApiFallback.ipeScenarios.mostDangerous.description,
-        campaignCodes: parseCodes(
-          rawDangerous.campaignCodes ?? rawDangerous.campanas,
-          campaignsApiFallback.ipeScenarios.mostDangerous.campaignCodes
-        ),
-      },
+      mostProbable: escenario('ESCENARIO_MAS_PROBABLE'),
+      mostDangerous: escenario('ESCENARIO_MAS_PELIGROSO'),
     },
   };
 }
 
-export async function obtenerTimelineCampanaApi(
-  campaignCode: string
-): Promise<{ data: CampaignTimelineResponse | null; notFound: boolean }> {
-  const safeCode = encodeURIComponent(campaignCode.trim());
-  const fallback: CampaignTimelineResponse = {
-    campaignCode,
-    clockSkewAdjusted: false,
-    events: [],
-  };
-
+export async function obtenerTimelineCampanaApi(campaignCode: string): Promise<CampaignTimelineResponse> {
   if (estaEnModoMock()) {
-    return { data: fallback, notFound: false };
-  }
-
-  try {
-    const respuesta = await fetch(`/api/v1/campaigns/${safeCode}/timeline`, {
-      headers: { Accept: 'application/json' },
-    });
-
-    if (respuesta.status === 404) {
-      return { data: null, notFound: true };
-    }
-
-    if (!respuesta.ok) {
-      return { data: fallback, notFound: false };
-    }
-
-    const json = (await respuesta.json()) as Partial<CampaignTimelineResponse>;
+    const campana = campanasMock.find((item) => item.id === campaignCode);
     return {
-      data: {
-        campaignCode:
-          typeof json.campaignCode === 'string' ? json.campaignCode : campaignCode,
-        clockSkewAdjusted: Boolean(json.clockSkewAdjusted),
-        events: Array.isArray(json.events)
-          ? (json.events as CampaignTimelineEvent[])
-          : [],
-      },
-      notFound: false,
+      campaignCode,
+      events: (campana?.eventos ?? []).map((evento, indice) => ({
+        id: indice + 1,
+        timestamp: evento.timestamp,
+        source: evento.carril,
+        actorToken: evento.usuarioToken,
+        accountToken: evento.cuentaToken,
+        summary: evento.detalle,
+        clockSkewAdjusted: evento.clockSkewAdjusted,
+      })),
     };
-  } catch {
-    return { data: fallback, notFound: false };
   }
+  return solicitarApi(`/api/v1/campaigns/${encodeURIComponent(campaignCode)}/timeline`, 'No se pudo cargar la cronología.');
 }
 
-export async function enviarRevelacionBreakGlassApi(payload: {
-  analystId: string;
-  reason: string;
-  campanaId: CampanaId;
-}): Promise<{ registrado: boolean }> {
-  const res = await fetchRelativoConFallback(
-    '/api/v1/audit/reveal',
-    { registrado: true },
+export function enviarRevelacionBreakGlassApi(
+  payload: { analystId: string; reason: string; accountToken: string },
+  clave: string
+): Promise<{ accountToken: string; technicalAccount: string; auditId: number }> {
+  return solicitarApi('/api/v1/audit/reveal', 'No se pudo revelar la cuenta.', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clave}` },
+    body: JSON.stringify(payload),
+    cache: 'no-store',
+  });
+}
+
+export function regenerarSeccionLlmApi(): Promise<{ section: 'conclusions'; text: string }> {
+  return solicitarApi('/api/v1/llm/regenerate-section', 'No se pudo regenerar la conclusión.', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ section: 'conclusions' }),
+  });
+}
+
+export interface EventoAuditoriaApi {
+  auditId: number;
+  executedAt: string | null;
+  operation: string;
+  datasetName: string | null;
+  rowHash: string;
+}
+
+export async function obtenerEventosAuditoriaApi(): Promise<EventoAuditoriaApi[]> {
+  const respuesta = await solicitarApi<{ events: EventoAuditoriaApi[] }>('/api/v1/audit/events', 'No se pudo cargar la bitácora.');
+  return respuesta.events;
+}
+
+export function verificarCadenaAuditoriaApi(): Promise<{ intact: boolean; checkedRows: number }> {
+  return solicitarApi('/api/v1/audit/verify-chain', 'No se pudo verificar la cadena.');
+}
+
+interface ArchivoDescarga {
+  blob: Blob;
+  filename: string;
+}
+
+async function obtenerArchivo(ruta: string, nombre: string, tipo: string, init?: RequestInit): Promise<ArchivoDescarga> {
+  const mensaje = 'No se pudo preparar el archivo.';
+  const respuesta = await consultarApi(ruta, mensaje, init);
+  if (!respuesta.headers.get('Content-Type')?.startsWith(tipo)) {
+    throw new Error(mensaje);
+  }
+  const nombreServidor = /filename="([^"]+)"/i.exec(respuesta.headers.get('Content-Disposition') ?? '')?.[1];
+  return { blob: await respuesta.blob(), filename: nombreServidor || nombre };
+}
+
+export function solicitarReportePorAudienciaApi(audience: AudienciaReporte, summary?: string): Promise<ArchivoDescarga> {
+  const medico = audience === 'medical';
+  return obtenerArchivo(
+    '/api/v1/reports/generate-pdf',
+    medico ? 'Reporte_Ejecutivo_Medico_AegisHealth.pdf' : 'Reporte_CTI_Tecnico_F11_AegisHealth.pdf',
+    'application/pdf',
     {
       method: 'POST',
-      body: JSON.stringify({
-        analystId: payload.analystId,
-        reason: payload.reason,
-        campanaId: payload.campanaId,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ audience, format: medico ? 'EJECUTIVO_MEDICO' : 'F-11', summary }),
     }
   );
-  return res.data;
 }
 
-export async function regenerarSeccionLlmApi(
-  seccionNumero = 8
-): Promise<{ texto: string }> {
-  const fallback = {
-    texto:
-      'Síntesis local Ollama (Sección 8): Migrar servicios heredados 8470–8478 hacia puertos cifrados TLS 9470–9476, deshabilitar Telnet (23/tcp) y SMBv1 (445/tcp), forzar sincronización NTP 24h para evitar desfases de 12h y auditar las 16 cuentas especiales bajo reglas Sigma IoA/IoC.',
-  };
-
-  const res = await fetchRelativoConFallback<{ texto?: string; conclusion?: string }>(
-    '/api/v1/llm/regenerate-section',
-    fallback,
-    {
-      method: 'POST',
-      body: JSON.stringify({ section: seccionNumero }),
-    }
-  );
-
-  return {
-    texto: res.data.texto || res.data.conclusion || fallback.texto,
-  };
+export function solicitarStixApi(): Promise<ArchivoDescarga> {
+  return obtenerArchivo('/api/v1/exports/stix', 'aegishealth_stix21_bundle.json', 'application/stix+json');
 }
 
-export async function verificarCadenaAuditoriaApi(
-  registros: RegistroAuditoria[]
-): Promise<{ valida: boolean }> {
-  const validaLocal = registros.every(
-    (item, idx) => idx === 0 || item.hashPrevio === registros[idx - 1].hashActual
-  );
-
-  const res = await fetchRelativoConFallback<{
-    intact?: boolean;
-    valid?: boolean;
-    valida?: boolean;
-  }>('/api/v1/audit/verify-chain', { valida: validaLocal });
-
-  if (typeof res.data.intact === 'boolean') {
-    return { valida: res.data.intact };
-  }
-  if (typeof res.data.valid === 'boolean') {
-    return { valida: res.data.valid };
-  }
-  if (typeof res.data.valida === 'boolean') {
-    return { valida: res.data.valida };
-  }
-  return { valida: validaLocal };
+export function descargarArchivo({ blob, filename }: ArchivoDescarga): void {
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = filename;
+  enlace.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
-
-export async function solicitarReportePorAudienciaApi(
-  audience: AudienciaReporte,
-  conclusionTexto = ''
-): Promise<{ blob: Blob; filename: string; desdeBackend: boolean }> {
-  const filename =
-    audience === 'medical'
-      ? 'Reporte_Ejecutivo_Medico_AegisHealth.pdf'
-      : 'Reporte_CTI_Tecnico_F11_AegisHealth.pdf';
-
-  if (!estaEnModoMock()) {
-    try {
-      const resp = await fetch('/api/v1/reports/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audience,
-          format: audience === 'medical' ? 'EJECUTIVO_MEDICO' : 'F-11',
-          summary: conclusionTexto,
-        }),
-      });
-      if (resp.ok) {
-        const blob = await resp.blob();
-        return { blob, filename, desdeBackend: true };
-      }
-    } catch {
-      // Respaldo local garantizado para no romper descarga
-    }
-  }
-
-  const blob =
-    audience === 'medical'
-      ? generarPdfEjecutivoMedicoBlob({
-          periodo: resumenEjecutivoMedicoMock.periodoAnalizado,
-          resumenSencillo: resumenEjecutivoMedicoMock.resumenSencillo,
-          hallazgos: resumenEjecutivoMedicoMock.hallazgosClaros,
-          acciones: resumenEjecutivoMedicoMock.accionesParaDireccion,
-        })
-      : generarPdfTecnicoF11Blob(
-          seccionesF11Mock,
-          conclusionTexto || seccionesF11Mock[7].resumen
-        );
-
-  return { blob, filename, desdeBackend: false };
-}
-
-export const recursosLocales = {
-  evidenciaIngestaMock,
-  seccionesF11Mock,
-  auditoriaInicialMock,
-};
