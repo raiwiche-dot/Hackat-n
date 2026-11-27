@@ -1,5 +1,6 @@
 import type { SesionUsuario } from '../auth/rolesAuth';
 import {
+  AlertIcon,
   ChartBarIcon,
   DocumentCheckIcon,
   LockIcon,
@@ -8,7 +9,13 @@ import {
   TimelineIcon,
 } from './AppIcons';
 
-export type VistaActiva = 'dashboard' | 'timeline' | 'threat-intel' | 'report-center';
+export type VistaActiva =
+  | 'dashboard'
+  | 'timeline'
+  | 'threat-intel'
+  | 'report-center'
+  | 'centinela'
+  | 'guardian';
 
 export interface EstadoSaludApi {
   postgresReady: boolean;
@@ -60,6 +67,20 @@ const itemsNavegacion: {
     etiqueta: 'Reporte F-11 & Auditoría',
     subtitulo: 'PDF técnico + Hash-Chain',
     Icon: DocumentCheckIcon,
+  },
+  {
+    id: 'centinela',
+    codigo: '05',
+    etiqueta: 'Centinela',
+    subtitulo: 'Reportes ciudadanos y mapa',
+    Icon: AlertIcon,
+  },
+  {
+    id: 'guardian',
+    codigo: '06',
+    etiqueta: 'Guardián',
+    subtitulo: 'Alertas, casos y decisión',
+    Icon: LockIcon,
   },
 ];
 

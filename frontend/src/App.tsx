@@ -15,6 +15,9 @@ import { MedicalPortalPage } from './pages/MedicalPortalPage';
 import { ReportCenterPage } from './pages/ReportCenterPage';
 import { ThreatIntelPage } from './pages/ThreatIntelPage';
 import { TimelinePage } from './pages/TimelinePage';
+import { CentinelaPage } from './pages/CentinelaPage';
+import { GuardianPage } from './pages/GuardianPage';
+import type { CredencialAnalista } from './services/pilotoApi';
 
 const infoVistaSoc: Record<VistaActiva, { titulo: string; subtitulo: string }> = {
   dashboard: {
@@ -33,6 +36,14 @@ const infoVistaSoc: Record<VistaActiva, { titulo: string; subtitulo: string }> =
     titulo: 'Centro de Reporte Técnico F-11 & Hash-Chain',
     subtitulo: 'Generación de PDF técnico de 8 secciones y verificación SHA-256 en cti_audit',
   },
+  centinela: {
+    titulo: 'Centinela · Reportes Ciudadanos de Phishing',
+    subtitulo: 'Indicadores extraídos, campañas y umbral de aviso a afiliados (simulado)',
+  },
+  guardian: {
+    titulo: 'Guardián · Retención de Operaciones Sospechosas',
+    subtitulo: 'Evaluación de eventos, casos en revisión y decisión auditada del analista',
+  },
 };
 
 export function App() {
@@ -44,6 +55,10 @@ export function App() {
     zeroEgress: false,
     apiDisponible: false,
   });
+
+  // Tokens del piloto: solo en memoria, se pierden al recargar o cerrar sesión.
+  const [sesionCentinela, setSesionCentinela] = useState('');
+  const [credAnalista, setCredAnalista] = useState<CredencialAnalista>({ analystId: '', analystToken: '' });
 
   const usandoMocks = estaEnModoMock();
 
@@ -70,6 +85,8 @@ export function App() {
 
   const handleCerrarSesion = () => {
     cerrarSesionLocal();
+    setSesionCentinela('');
+    setCredAnalista({ analystId: '', analystToken: '' });
     setSesion(null);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -145,6 +162,14 @@ export function App() {
 
           {vistaActiva === 'report-center' && (
             <ReportCenterPage secciones={seccionesF11Mock} />
+          )}
+
+          {vistaActiva === 'centinela' && (
+            <CentinelaPage sesionToken={sesionCentinela} onCambiarSesionToken={setSesionCentinela} />
+          )}
+
+          {vistaActiva === 'guardian' && (
+            <GuardianPage credencial={credAnalista} onCambiarCredencial={setCredAnalista} />
           )}
         </main>
 

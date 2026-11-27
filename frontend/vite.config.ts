@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': proxyBackend,
         '/health': proxyBackend,
+        '/openapi.json': proxyBackend,
       },
     },
   };
