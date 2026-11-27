@@ -2,12 +2,12 @@ import { useState } from 'react';
 import type { SesionUsuario } from '../auth/rolesAuth';
 import { CheckIcon, DocumentCheckIcon, DownloadIcon, LockIcon, ShieldIcon } from '../components/AppIcons';
 import { resumenEjecutivoMedicoMock } from '../mocks/mockData';
-import { solicitarReportePorAudienciaApi } from '../services/apiClient';
+import { describirError, descargarReportePdfApi } from '../services/apiClient';
 
 interface MedicalPortalPageProps {
   sesion: SesionUsuario;
   onCerrarSesion: () => void;
-  onRegistrarAuditoria: (tipoEvento: string, detalle: string, actorToken?: string) => void;
+  onRegistrarAuditoria?: (tipoEvento: string, detalle: string, actorToken?: string) => void;
 }
 
 const etiquetaPrioridad: Record<'ALTA' | 'MEDIA' | 'CONTROLADA', string> = {
@@ -33,27 +33,20 @@ export const MedicalPortalPage = ({
   };
 
   const handleDescargarInformeMedico = async () => {
+    if (descargando) return;
     setDescargando(true);
     try {
-      const { blob, filename, desdeBackend } = await solicitarReportePorAudienciaApi(
-        'medical',
-        resumen.resumenSencillo
-      );
-      const url = URL.createObjectURL(blob);
-      const enlace = document.createElement('a');
-      enlace.href = url;
-      enlace.download = filename;
-      enlace.click();
-      URL.revokeObjectURL(url);
-
+      const { filename, desdeBackend, auditId } = await descargarReportePdfApi('medical');
       setMensajeDescarga(
-        `${filename} descargado (${desdeBackend ? 'generado en servidor local' : 'edición ejecutiva local'}).`
+        `${filename} descargado (${desdeBackend ? `servidor local${auditId ? ` · auditoría ${auditId}` : ''}` : 'edición ejecutiva local'}).`
       );
-      onRegistrarAuditoria(
+      onRegistrarAuditoria?.(
         'EXPORT_MEDICAL_PDF',
         'Descarga de Informe Ejecutivo para Dirección Médica (fuentes externas).',
         sesion.usuario
       );
+    } catch (e) {
+      setMensajeDescarga(`No se pudo generar el informe: ${describirError(e)}`);
     } finally {
       setDescargando(false);
     }

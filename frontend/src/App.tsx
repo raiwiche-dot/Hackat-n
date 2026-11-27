@@ -7,19 +7,8 @@ import {
 } from './auth/rolesAuth';
 import { HeaderConfianza } from './components/HeaderConfianza';
 import type { EstadoSaludApi, VistaActiva } from './components/HeaderConfianza';
-import {
-  adversariosMock,
-  artefactosMock,
-  auditoriaInicialMock,
-  campanasMock,
-  seccionesF11Mock,
-} from './mocks/mockData';
-import type { CampanaId, RegistroAuditoria } from './mocks/mockData';
-import {
-  estaEnModoMock,
-  obtenerEstadoSaludApi,
-  saludEjemploMock,
-} from './services/apiClient';
+import { seccionesF11Mock } from './mocks/mockData';
+import { estaEnModoMock, obtenerEstadoSaludApi } from './services/apiClient';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { MedicalPortalPage } from './pages/MedicalPortalPage';
@@ -49,103 +38,40 @@ const infoVistaSoc: Record<VistaActiva, { titulo: string; subtitulo: string }> =
 export function App() {
   const [sesion, setSesion] = useState<SesionUsuario | null>(() => leerSesionLocal());
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>('dashboard');
-  const [registrosAuditoria, setRegistrosAuditoria] =
-    useState<RegistroAuditoria[]>(auditoriaInicialMock);
-  const [estadoSalud, setEstadoSalud] = useState<EstadoSaludApi>(saludEjemploMock);
+  const [estadoSalud, setEstadoSalud] = useState<EstadoSaludApi>({
+    postgresReady: false,
+    ollamaReady: false,
+    zeroEgress: false,
+    apiDisponible: false,
+  });
 
   const usandoMocks = estaEnModoMock();
 
   useEffect(() => {
-    obtenerEstadoSaludApi().then(setEstadoSalud);
+    let active = true;
+    const consultar = () =>
+      obtenerEstadoSaludApi().then((r) => {
+        if (active) setEstadoSalud(r);
+      });
+    void consultar();
+    const id = window.setInterval(consultar, 30000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
   }, []);
-
-  const agregarRegistroAuditoria = (
-    tipoEvento: string,
-    detalle: string,
-    actorToken = 'soc.tecnico'
-  ) => {
-    setRegistrosAuditoria((prev) => {
-      const ultimoHash =
-        prev.length > 0 ? prev[prev.length - 1].hashActual : 'GENESIS';
-      const nuevoHash = ((ultimoHash.length * 997 + prev.length * 131 + 4099) % 0xffffffff)
-        .toString(16)
-        .padStart(16, '0');
-
-      const nuevoRegistro: RegistroAuditoria = {
-        id: `AUD-${String(prev.length + 1).padStart(3, '0')}`,
-        timestamp: `${new Date().toISOString().replace('T', ' ').slice(0, 19)} UTC`,
-        tipoEvento,
-        actorToken,
-        detalle,
-        hashPrevio: ultimoHash,
-        hashActual: nuevoHash,
-      };
-      return [...prev, nuevoRegistro];
-    });
-  };
 
   const handleLoginExitoso = (nuevaSesion: SesionUsuario) => {
     guardarSesionLocal(nuevaSesion);
     setSesion(nuevaSesion);
     setVistaActiva('dashboard');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    agregarRegistroAuditoria(
-      'LOGIN_PERFIL_ROL',
-      `Acceso autorizado para ${nuevaSesion.tituloPerfil}.`,
-      nuevaSesion.usuario
-    );
   };
 
   const handleCerrarSesion = () => {
     cerrarSesionLocal();
     setSesion(null);
     window.scrollTo({ top: 0, behavior: 'instant' });
-  };
-
-  const handleRegistrarBreakGlass = (
-    analistaId: string,
-    motivo: string,
-    campanaId: CampanaId
-  ) => {
-    agregarRegistroAuditoria(
-      'BREAK_GLASS_REVEAL',
-      `Revelación temporal en ${campanaId}. Motivo: ${motivo}`,
-      analistaId
-    );
-  };
-
-  const handleExportarStix = () => {
-    const bundleStix = {
-      type: 'bundle',
-      id: 'bundle--aegishealth-cti-synthetic-001',
-      spec_version: '2.1',
-      x_tlp_marking: 'TLP:RED',
-      objects: [
-        {
-          type: 'indicator',
-          id: 'indicator--camp-2026-001-egress',
-          name: 'Egreso sintético 186.46.219.18:8443',
-          labels: ['synthetic-exercise-data', 'hackathon-simulation'],
-          pattern: "[ipv4-addr:value = '186.46.219.18' AND network-traffic:dst_port = 8443]",
-          pattern_type: 'stix',
-        },
-      ],
-    };
-
-    const blob = new Blob([JSON.stringify(bundleStix, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const enlace = document.createElement('a');
-    enlace.href = url;
-    enlace.download = 'aegishealth_stix21_bundle.json';
-    enlace.click();
-    URL.revokeObjectURL(url);
-
-    agregarRegistroAuditoria(
-      'EXPORT_STIX_2_1',
-      'Exportación STIX 2.1 con etiqueta synthetic-exercise-data y TLP:RED.'
-    );
   };
 
   if (!sesion) {
@@ -157,7 +83,6 @@ export function App() {
       <MedicalPortalPage
         sesion={sesion}
         onCerrarSesion={handleCerrarSesion}
-        onRegistrarAuditoria={agregarRegistroAuditoria}
       />
     );
   }
@@ -211,28 +136,15 @@ export function App() {
           )}
 
           {vistaActiva === 'timeline' && (
-            <TimelinePage
-              campanas={campanasMock}
-              onRegistrarBreakGlass={handleRegistrarBreakGlass}
-            />
+            <TimelinePage analistaPorDefecto={sesion.usuario} />
           )}
 
           {vistaActiva === 'threat-intel' && (
-            <ThreatIntelPage
-              adversarios={adversariosMock}
-              artefactos={artefactosMock}
-              onExportarStix={handleExportarStix}
-            />
+            <ThreatIntelPage />
           )}
 
           {vistaActiva === 'report-center' && (
-            <ReportCenterPage
-              secciones={seccionesF11Mock}
-              registrosAuditoria={registrosAuditoria}
-              onRegistrarEventoAuditoria={(tipo, det) =>
-                agregarRegistroAuditoria(tipo, det, sesion.usuario)
-              }
-            />
+            <ReportCenterPage secciones={seccionesF11Mock} />
           )}
         </main>
 
