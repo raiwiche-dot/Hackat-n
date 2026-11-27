@@ -1,0 +1,43 @@
+title: Conexión SSH (base)
+id: ca770bc3-59fc-5292-aa3c-4be4bcff2061
+name: aegis_ioa08_ssh
+status: experimental
+description: 'Evento base: conexión SSH.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.lateral-movement
+logsource:
+  product: aegishealth
+  category: firewall
+detection:
+  seleccion_puerto:
+    dst_port: 22
+  seleccion_protocolo:
+    protocol: SSH
+  condition: seleccion_puerto or seleccion_protocolo
+falsepositives:
+- Administradores de servidores
+level: low
+
+---
+title: Sesiones SSH masivas desde una misma máquina
+id: 03073609-fe99-53ac-8c6e-54c12905d21a
+name: aegis_ioa08_ssh_masivo
+status: experimental
+description: 10 o más conexiones SSH desde la misma IP en 1 hora.
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.lateral-movement
+- attack.t1021.004
+correlation:
+  type: event_count
+  rules:
+  - aegis_ioa08_ssh
+  group-by:
+  - src_ip
+  timespan: 1h
+  condition:
+    gte: 10
+level: high

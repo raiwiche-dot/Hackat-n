@@ -1,0 +1,43 @@
+title: Actividad de una cuenta del sistema médico (base)
+id: 346bc7c8-9517-542b-976a-cef4e3ebf03b
+name: aegis_ioa06_actividad_cuenta
+status: experimental
+description: 'Evento base: cualquier acción registrada por una cuenta.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.defense-evasion
+logsource:
+  product: aegishealth
+  service: sistema_medico
+detection:
+  seleccion:
+    account_token|exists: true
+  condition: seleccion
+falsepositives:
+- Ninguno
+level: low
+
+---
+title: Cuenta usada por varias identidades
+id: fee8030f-ca36-5cb1-88f4-ab23a10d0774
+name: aegis_ioa06_cuenta_compartida
+status: experimental
+description: Una misma cuenta usada por 3 o más identidades distintas (lo normal es
+  1 persona por cuenta).
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.defense-evasion
+- attack.t1078
+correlation:
+  type: value_count
+  rules:
+  - aegis_ioa06_actividad_cuenta
+  group-by:
+  - account_token
+  timespan: 30d
+  condition:
+    field: actor_token
+    gte: 3
+level: high

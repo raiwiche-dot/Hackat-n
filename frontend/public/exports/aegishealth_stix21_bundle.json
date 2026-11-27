@@ -1,0 +1,1420 @@
+{
+  "type": "bundle",
+  "id": "bundle--ddedfc58-368b-4577-a950-046b73fc6a91",
+  "objects": [
+    {
+      "type": "marking-definition",
+      "spec_version": "2.1",
+      "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
+      "created": "2017-01-20T00:00:00.000Z",
+      "definition_type": "tlp",
+      "name": "TLP:AMBER",
+      "definition": {
+        "tlp": "amber"
+      }
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "name": "Equipo AegisHealth-CTI (Hackatón IESS 2026)",
+      "identity_class": "organization"
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "CAMP-2026-001 - Salida de datos hacia IP externa",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Severidad CRITICA. Conexión permitida de 10.10.100.40 hacia la IP pública 186.46.219.18:8443. Secuencia completa: acceso SSH al servidor, actividad del mismo usuario en el sistema médico (INGRESO SIST_MED_IESS, DESCARGA EXITOSA) y salida externa.",
+      "first_seen": "2026-10-24T22:40:00.000Z",
+      "last_seen": "2026-10-24T22:40:30.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--918dd6cf-f37a-5016-86a0-4dc2a38345c9",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Actor de CAMP-2026-001 (HYBRID)",
+      "threat_actor_types": [
+        "insider-disgruntled",
+        "criminal"
+      ],
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Perfil inferido de los hallazgos: IOA-05.",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--a671d350-99ae-56af-9990-2bb07d9bd015",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-DC30A0D39E5A",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-DC30A0D39E5A']",
+      "valid_from": "2026-10-24T22:40:00.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "CAMP-2026-002 - Sesiones SSH masivas | Transferencias masivas interrumpidas",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Severidad ALTA. 2970 transferencias interrumpidas y 30 exitosas de la cuenta ACC-79FE100B6B16 en una hora. 30 conexiones SSH desde 10.10.100.50 en una hora (umbral 10).",
+      "first_seen": "2026-10-07T13:00:00.000Z",
+      "last_seen": "2026-10-07T13:00:45.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--4e576113-970a-526d-8590-b5661e2b7839",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Actor de CAMP-2026-002 (ACTOR_CON_PRESENCIA_INTERNA)",
+      "threat_actor_types": [
+        "unknown"
+      ],
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Perfil inferido de los hallazgos: IOA-04, IOA-09.",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--fcc46427-844a-58eb-91d3-dc4261a59ab3",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-79FE100B6B16",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-79FE100B6B16']",
+      "valid_from": "2026-10-07T13:00:00.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--3b3cc956-85ca-5e6d-9b49-2019382515d6",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "CAMP-2026-003 - Fuerza bruta contra una cuenta | Ráfaga de conexiones negadas",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Severidad ALTA. 2000 conexiones negadas al puerto 23 desde 10.10.100.10 en una hora (umbral 100). 2000 accesos fallidos a la cuenta ACC-410762D420CB en una hora (umbral 50).",
+      "first_seen": "2026-10-10T00:00:00.000Z",
+      "last_seen": "2026-10-10T00:05:00.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--e4e0dfaf-17b1-57f4-8aa9-5904b31dd251",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Actor de CAMP-2026-003 (ACTOR_CON_PRESENCIA_INTERNA)",
+      "threat_actor_types": [
+        "unknown"
+      ],
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Perfil inferido de los hallazgos: IOA-01, IOA-03.",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--eb7f863e-f833-5656-80d7-4f804dc539b9",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-410762D420CB",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-410762D420CB']",
+      "valid_from": "2026-10-10T00:00:00.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "CAMP-2026-004 - Cuenta usada por varias identidades | Escaneo de servicios críticos | Fuerza bruta contra una cuenta | Registros con IP malformada | Ráfaga de conexiones negadas",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Severidad ALTA. 250 conexiones negadas al puerto 137 desde 10.10.100.20 en una hora (umbral 100). 250 conexiones negadas al puerto 445 desde 10.10.100.20 en una hora (umbral 100). 250 conexiones negadas al puerto 3389 desde 10.10.100.20 en una hora (umbral 100). 250 conexiones negadas al puerto 8471 desde 10.10.100.20 en una hora (umbral 100). 10.10.100.20 intentó 4 servicios críticos distintos [137, 445, 3389, 8471] en una hora.",
+      "first_seen": "2026-10-01T06:33:53.000Z",
+      "last_seen": "2026-10-31T21:49:22.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--3000d219-7a93-5b2d-8832-e9e4380ace54",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Actor de CAMP-2026-004 (ACTOR_CON_PRESENCIA_INTERNA)",
+      "threat_actor_types": [
+        "unknown"
+      ],
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Perfil inferido de los hallazgos: IOA-01, IOA-02, IOA-03, IOA-06, IOA-08.",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--2227408d-109f-5b82-a931-eeefe5cac932",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-A9764DFB78FE",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-A9764DFB78FE']",
+      "valid_from": "2026-10-01T06:33:53.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "CAMP-2026-005 - Abuso de privilegios administrativos | Cuenta usada por varias identidades | Registros con IP malformada",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Severidad ALTA. La cuenta ACC-0639B2D753A4 fue usada por 1737 identidades distintas (lo normal es 1). La cuenta ACC-0639B2D753A4 hizo 1929 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 975, 'Reactivacion de usuarios': 954}. 186 eventos de la cuenta ACC-0639B2D753A4 con IP escrita sin puntos (formato anómalo). La cuenta ACC-877CD64A4EC0 fue usada por 1399 identidades distintas (lo normal es 1). La cuenta ACC-877CD64A4EC0 hizo 1533 operaciones de administración de usuarios (100% de su actividad): {'Reactivacion de usuarios': 826, 'Inactivacion de usuarios': 707}.",
+      "first_seen": "2026-10-01T00:20:43.000Z",
+      "last_seen": "2026-10-31T23:57:54.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--a8aa47b5-a23d-56e1-9590-344cef04d410",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Actor de CAMP-2026-005 (INSIDER_THREAT)",
+      "threat_actor_types": [
+        "insider-disgruntled"
+      ],
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Perfil inferido de los hallazgos: IOA-06, IOA-07, IOA-08.",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ee5968d8-53f3-5d20-8557-f7c2516a063d",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-0639B2D753A4",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-0639B2D753A4']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--77ec1332-28ab-58bf-8c2a-839f56925d5b",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-16A5FAA35471",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-16A5FAA35471']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--73018826-59be-5658-b5c9-3efe2d973b4e",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-1B3035A0DF46",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-1B3035A0DF46']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--dcbeeb90-f6d9-5452-af17-a7691ecb8070",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-2CF46526E77B",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-2CF46526E77B']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--50df0b29-fe7b-55ac-a15f-8114ee5872b6",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-47DB66623372",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-47DB66623372']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d8f20b8e-963f-53e6-9f66-37fe1ac9f3ae",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-4ED6B617541D",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-4ED6B617541D']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--34ba60db-f1c8-5f58-8834-6b2ffa60f624",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-4F8BEF63C78C",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-4F8BEF63C78C']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--059214fd-0069-5971-bb1d-ff460582b656",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-69C5B524099D",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-69C5B524099D']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--794d43db-de65-5456-a65e-f396161bd79b",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-7DE8F669601E",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-7DE8F669601E']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--960765f2-f276-5200-9e0b-eabe066e6b38",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-877CD64A4EC0",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-877CD64A4EC0']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--e8d44ed3-4bf5-5b3a-9795-197e476e2130",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-CAEF7516B5C5",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-CAEF7516B5C5']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d4ed15b7-4dd7-594f-ae9c-f585a3acecbe",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Cuenta comprometida o abusada ACC-CCABDA8231E1",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. Token seudonimizado (HMAC-SHA256); la identidad real no está en este archivo.",
+      "indicator_types": [
+        "compromised"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[user-account:user_id = 'ACC-CCABDA8231E1']",
+      "valid_from": "2026-10-01T00:20:43.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--2e990d88-cee8-5acd-955b-169e856fa5b7",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Egreso hacia IP externa 186.46.219.18:8443 (sintético)",
+      "description": "DATO SINTÉTICO DE EJERCICIO - Hackatón IESS 2026. No usar como inteligencia real. No consultar ni escanear esta IP.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern_type": "stix",
+      "pattern": "[network-traffic:dst_ref.value = '186.46.219.18' AND network-traffic:dst_port = 8443]",
+      "valid_from": "2026-11-26T20:19:25.000Z",
+      "labels": [
+        "synthetic-exercise-data",
+        "hackathon-simulation"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--b5caf5c8-c43c-5802-9389-0dc63391878b",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Remote Services: SSH",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.004",
+          "url": "https://attack.mitre.org/techniques/T1021/004/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--81f68b88-aa5e-5015-8590-e0036bd1be5c",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Exfiltration Over Asymmetric Encrypted Non-C2 Protocol",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1048.002",
+          "url": "https://attack.mitre.org/techniques/T1048/002/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--01c7df64-3281-5418-b3a5-2baf1153cf62",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Valid Accounts",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1078",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--2fe07d0d-6510-52e0-b7a9-2c044468c1f3",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Data from Information Repositories",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1213",
+          "url": "https://attack.mitre.org/techniques/T1213/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--eb67bf3c-e1a5-5c01-8480-c67b6073d815",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Data Staged",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1074",
+          "url": "https://attack.mitre.org/techniques/T1074/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--8eb0b1cf-6fe5-50c4-9a8e-a5393bee5605",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Remote Services",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021",
+          "url": "https://attack.mitre.org/techniques/T1021/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--99db6efd-6530-5ddb-b8ac-91c5de2aba9d",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Brute Force: Password Guessing",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1110.001",
+          "url": "https://attack.mitre.org/techniques/T1110/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--02a3b428-4f9a-5379-9132-80791c7a28c6",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Remote Services: Remote Desktop Protocol",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.001",
+          "url": "https://attack.mitre.org/techniques/T1021/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--ff392ec9-ebff-50f7-89ce-1be4cf26ac9f",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Remote Services: SMB/Windows Admin Shares",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.002",
+          "url": "https://attack.mitre.org/techniques/T1021/002/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--c929225f-fb05-5c3a-b984-b7e3b4073c62",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Network Service Discovery",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1046",
+          "url": "https://attack.mitre.org/techniques/T1046/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--ae5498dc-ecd6-5fc3-a143-990593f1a4b6",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Brute Force: Password Spraying",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1110.003",
+          "url": "https://attack.mitre.org/techniques/T1110/003/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--76ae1a6a-e644-587f-a7fc-0f7d457c0897",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Account Manipulation",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1098",
+          "url": "https://attack.mitre.org/techniques/T1098/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--03486af5-4aee-5a73-af43-3ed8ac577a2d",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "name": "Account Access Removal",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1531",
+          "url": "https://attack.mitre.org/techniques/T1531/"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--e2aacad5-8ebc-5bac-b589-6d5b08c7855c",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "target_ref": "threat-actor--918dd6cf-f37a-5016-86a0-4dc2a38345c9"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d1a1793a-2bcc-53e5-a21f-778dae5900ff",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "target_ref": "attack-pattern--b5caf5c8-c43c-5802-9389-0dc63391878b"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7cdb7e52-9fa3-5afe-8784-625ab1b7d382",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "target_ref": "attack-pattern--81f68b88-aa5e-5015-8590-e0036bd1be5c"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7fb9b2cd-5fdd-5eaf-b8ff-7e6ebd029f57",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "target_ref": "attack-pattern--01c7df64-3281-5418-b3a5-2baf1153cf62"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0f7e9d07-c397-5fc0-b93a-77d5da6d5e17",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58",
+      "target_ref": "attack-pattern--2fe07d0d-6510-52e0-b7a9-2c044468c1f3"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d1f66803-9ba1-520c-b187-b4e0d9dcc52a",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--a671d350-99ae-56af-9990-2bb07d9bd015",
+      "target_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--4c32fff5-fe88-5a96-955d-664ee9951c9b",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36",
+      "target_ref": "threat-actor--4e576113-970a-526d-8590-b5661e2b7839"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--272cbcf4-9813-5b80-914a-9fcb4dcbc160",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36",
+      "target_ref": "attack-pattern--b5caf5c8-c43c-5802-9389-0dc63391878b"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--5da4ec02-c319-55ae-9290-bafd6031ceef",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36",
+      "target_ref": "attack-pattern--eb67bf3c-e1a5-5c01-8480-c67b6073d815"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d502fbb4-17b7-50cd-b823-e9deaeb33cda",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36",
+      "target_ref": "attack-pattern--2fe07d0d-6510-52e0-b7a9-2c044468c1f3"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--011de478-a10d-5b16-9350-155041302163",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--fcc46427-844a-58eb-91d3-dc4261a59ab3",
+      "target_ref": "campaign--ef2855cf-e7b8-5f8c-b9c0-1f909046fd36"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--00dbbe1b-a575-543b-9ee8-911d84af9b78",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--3b3cc956-85ca-5e6d-9b49-2019382515d6",
+      "target_ref": "threat-actor--e4e0dfaf-17b1-57f4-8aa9-5904b31dd251"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7b0c1372-0cb3-5c5a-8723-d94714d1e541",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--3b3cc956-85ca-5e6d-9b49-2019382515d6",
+      "target_ref": "attack-pattern--8eb0b1cf-6fe5-50c4-9a8e-a5393bee5605"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--41cc1331-b942-57eb-a322-de450130a2dd",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--3b3cc956-85ca-5e6d-9b49-2019382515d6",
+      "target_ref": "attack-pattern--99db6efd-6530-5ddb-b8ac-91c5de2aba9d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--756e4d94-c4b6-5823-a608-5868c999f4f0",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--eb7f863e-f833-5656-80d7-4f804dc539b9",
+      "target_ref": "campaign--3b3cc956-85ca-5e6d-9b49-2019382515d6"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--30f70a8b-d0c0-57f2-be1f-5973f515e417",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "threat-actor--3000d219-7a93-5b2d-8832-e9e4380ace54"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--66705fd0-896d-5285-aeb0-254df2a6291a",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--02a3b428-4f9a-5379-9132-80791c7a28c6"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--215378f0-d6fb-53b1-99b8-28ef6cb28d6f",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--ff392ec9-ebff-50f7-89ce-1be4cf26ac9f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3567a4d3-d95e-51be-bedc-63e630951a4e",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--c929225f-fb05-5c3a-b984-b7e3b4073c62"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--f2d07a2a-d6b4-5b66-92e8-4ec835bba091",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--01c7df64-3281-5418-b3a5-2baf1153cf62"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--a164e481-664b-5abf-99b5-8eccb087f732",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--99db6efd-6530-5ddb-b8ac-91c5de2aba9d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--89b7c77e-1ed5-585d-baea-989a45658cdc",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac",
+      "target_ref": "attack-pattern--ae5498dc-ecd6-5fc3-a143-990593f1a4b6"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--a3e7ba32-0333-50ca-899b-091e2d842815",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--2227408d-109f-5b82-a931-eeefe5cac932",
+      "target_ref": "campaign--b9fe64e1-d957-5738-9dfc-c47c249744ac"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--e8747dd9-14a2-556b-9a3e-7b4be9a0b15b",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f",
+      "target_ref": "threat-actor--a8aa47b5-a23d-56e1-9590-344cef04d410"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--39ac3b78-a23d-5a80-89ca-e3237d767b79",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f",
+      "target_ref": "attack-pattern--01c7df64-3281-5418-b3a5-2baf1153cf62"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--1b0d5b59-5800-54c0-88eb-f0571c83ce65",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f",
+      "target_ref": "attack-pattern--76ae1a6a-e644-587f-a7fc-0f7d457c0897"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--6ea0bed0-d99c-5bf6-ac3d-62d2fdb83801",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "uses",
+      "source_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f",
+      "target_ref": "attack-pattern--03486af5-4aee-5a73-af43-3ed8ac577a2d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3017b116-5d69-5597-a9db-8c7740fd9879",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--ee5968d8-53f3-5d20-8557-f7c2516a063d",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--b0254bd0-6005-5ac9-8e78-70cd76f94952",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--77ec1332-28ab-58bf-8c2a-839f56925d5b",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0f052f16-9605-509b-a840-d8e2317b377d",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--73018826-59be-5658-b5c9-3efe2d973b4e",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7d32c5b5-f5dc-5cd3-ab62-4ca013c86cde",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--dcbeeb90-f6d9-5452-af17-a7691ecb8070",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--446cdc70-1301-5966-a3a2-dc5a79b80576",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--50df0b29-fe7b-55ac-a15f-8114ee5872b6",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--bb4dcb24-a75b-5c3c-bbf4-4630448bd5fe",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--d8f20b8e-963f-53e6-9f66-37fe1ac9f3ae",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7d29d97c-d4c4-5c8b-95ab-4675b0a746a5",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--34ba60db-f1c8-5f58-8834-6b2ffa60f624",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--740d3324-3f27-5203-965b-0d83f0661a78",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--059214fd-0069-5971-bb1d-ff460582b656",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--ad46ab98-2451-520e-8a40-994174993ca2",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--794d43db-de65-5456-a65e-f396161bd79b",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--df5535a9-7c99-51df-9404-1e11a7c900c6",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--960765f2-f276-5200-9e0b-eabe066e6b38",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0a12a058-bed3-5e87-8f30-89fce23bdfe3",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--e8d44ed3-4bf5-5b3a-9795-197e476e2130",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--b0381a29-78bc-5733-baf3-d6722abd6295",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--d4ed15b7-4dd7-594f-ae9c-f585a3acecbe",
+      "target_ref": "campaign--e2648472-6f0c-5df3-9a03-74271c0e7a4f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--64513c6e-74cb-57ad-ae5e-a828f3f556df",
+      "created": "2026-11-26T20:19:25.000Z",
+      "modified": "2026-11-26T20:19:25.000Z",
+      "created_by_ref": "identity--d788c511-8788-5e06-b865-d1c6f813e990",
+      "object_marking_refs": [
+        "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+      ],
+      "relationship_type": "indicates",
+      "source_ref": "indicator--2e990d88-cee8-5acd-955b-169e856fa5b7",
+      "target_ref": "campaign--2fd1349a-add1-5d1e-b3f4-8c7acfc18c58"
+    }
+  ]
+}
