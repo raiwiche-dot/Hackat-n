@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react';
+import {
+  cerrarSesionLocal,
+  guardarSesionLocal,
+  leerSesionLocal,
+  type SesionUsuario,
+} from './auth/rolesAuth';
 import { HeaderConfianza } from './components/HeaderConfianza';
 import type { EstadoSaludApi, VistaActiva } from './components/HeaderConfianza';
 import {
@@ -15,34 +21,34 @@ import {
   saludEjemploMock,
 } from './services/apiClient';
 import { DashboardPage } from './pages/DashboardPage';
-import { TimelinePage } from './pages/TimelinePage';
-import { ThreatIntelPage } from './pages/ThreatIntelPage';
+import { LoginPage } from './pages/LoginPage';
+import { MedicalPortalPage } from './pages/MedicalPortalPage';
 import { ReportCenterPage } from './pages/ReportCenterPage';
+import { ThreatIntelPage } from './pages/ThreatIntelPage';
+import { TimelinePage } from './pages/TimelinePage';
 
-export type ModoLectura = 'simple' | 'tecnico';
-
-const infoVistaActual: Record<VistaActiva, { titulo: string; subtitulo: string }> = {
+const infoVistaSoc: Record<VistaActiva, { titulo: string; subtitulo: string }> = {
   dashboard: {
-    titulo: 'Resumen general y mapa horario',
-    subtitulo: 'Estado de la actividad registrada, alertas detectadas y horarios de mayor movimiento',
+    titulo: 'Consola de Telemetría & Escenarios IPE',
+    subtitulo: 'Fuentes internas: 10,023,532 registros auditados, ML sin reglas y matriz 24×31',
   },
   timeline: {
-    titulo: 'Secuencia de eventos y privacidad',
-    subtitulo: 'Orden cronológico de cada incidente y resguardo de identidades LOPDP',
+    titulo: 'Kill Chain Cross-Layer & Break-Glass',
+    subtitulo: 'Correlación Firewall <-> MedSys con ajuste selectivo +12h y bóveda account_vault',
   },
   'threat-intel': {
-    titulo: 'Adversarios y reglas de protección',
-    subtitulo: 'Perfiles de riesgo, comportamientos detectados y exportación para alertas',
+    titulo: 'MITRE ATT&CK · Reglas Sigma (IoA/IoC) · STIX 2.1',
+    subtitulo: 'Separación estricta entre indicadores de comportamiento y contención puntual',
   },
   'report-center': {
-    titulo: 'Reporte F-11 y auditoría',
-    subtitulo: 'Las 8 secciones requeridas para entrega y verificación de integridad',
+    titulo: 'Centro de Reporte Técnico F-11 & Hash-Chain',
+    subtitulo: 'Generación de PDF técnico de 8 secciones y verificación SHA-256 en cti_audit',
   },
 };
 
 export function App() {
+  const [sesion, setSesion] = useState<SesionUsuario | null>(() => leerSesionLocal());
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>('dashboard');
-  const [modoLectura, setModoLectura] = useState<ModoLectura>('simple');
   const [registrosAuditoria, setRegistrosAuditoria] =
     useState<RegistroAuditoria[]>(auditoriaInicialMock);
   const [estadoSalud, setEstadoSalud] = useState<EstadoSaludApi>(saludEjemploMock);
@@ -56,18 +62,18 @@ export function App() {
   const agregarRegistroAuditoria = (
     tipoEvento: string,
     detalle: string,
-    actorToken = 'ANALISTA-ACTIVO'
+    actorToken = 'soc.tecnico'
   ) => {
     setRegistrosAuditoria((prev) => {
       const ultimoHash =
-        prev.length > 0 ? prev[prev.length - 1].hashActual : '0000000000000000';
-      const nuevoHash = ((ultimoHash.length * 997 + prev.length * 131) % 0xffffffff)
+        prev.length > 0 ? prev[prev.length - 1].hashActual : 'GENESIS';
+      const nuevoHash = ((ultimoHash.length * 997 + prev.length * 131 + 4099) % 0xffffffff)
         .toString(16)
         .padStart(16, '0');
 
       const nuevoRegistro: RegistroAuditoria = {
-        id: `AUD-${100 + prev.length + 1}`,
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        id: `AUD-${String(prev.length + 1).padStart(3, '0')}`,
+        timestamp: `${new Date().toISOString().replace('T', ' ').slice(0, 19)} UTC`,
         tipoEvento,
         actorToken,
         detalle,
@@ -78,6 +84,24 @@ export function App() {
     });
   };
 
+  const handleLoginExitoso = (nuevaSesion: SesionUsuario) => {
+    guardarSesionLocal(nuevaSesion);
+    setSesion(nuevaSesion);
+    setVistaActiva('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    agregarRegistroAuditoria(
+      'LOGIN_PERFIL_ROL',
+      `Acceso autorizado para ${nuevaSesion.tituloPerfil}.`,
+      nuevaSesion.usuario
+    );
+  };
+
+  const handleCerrarSesion = () => {
+    cerrarSesionLocal();
+    setSesion(null);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
   const handleRegistrarBreakGlass = (
     analistaId: string,
     motivo: string,
@@ -85,7 +109,7 @@ export function App() {
   ) => {
     agregarRegistroAuditoria(
       'BREAK_GLASS_REVEAL',
-      `Revelación temporal de cuentas técnicas en ${campanaId}. Motivo: ${motivo}`,
+      `Revelación temporal en ${campanaId}. Motivo: ${motivo}`,
       analistaId
     );
   };
@@ -94,13 +118,14 @@ export function App() {
     const bundleStix = {
       type: 'bundle',
       id: 'bundle--aegishealth-cti-synthetic-001',
-      x_synthetic_data: true,
-      x_disclaimer: 'Generado exclusivamente sobre datos sintéticos de laboratorio.',
+      spec_version: '2.1',
+      x_tlp_marking: 'TLP:RED',
       objects: [
         {
           type: 'indicator',
           id: 'indicator--camp-2026-001-egress',
-          name: 'Conexión saliente hacia 186.46.219.18:8443 (Sintético)',
+          name: 'Egreso sintético 186.46.219.18:8443',
+          labels: ['synthetic-exercise-data', 'hackathon-simulation'],
           pattern: "[ipv4-addr:value = '186.46.219.18' AND network-traffic:dst_port = 8443]",
           pattern_type: 'stix',
         },
@@ -113,86 +138,73 @@ export function App() {
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = 'aegishealth_stix_2_1_sintetico.json';
+    enlace.download = 'aegishealth_stix21_bundle.json';
     enlace.click();
     URL.revokeObjectURL(url);
 
     agregarRegistroAuditoria(
       'EXPORT_STIX_2_1',
-      'Exportación de bundle STIX 2.1 etiquetado como dato sintético.'
+      'Exportación STIX 2.1 con etiqueta synthetic-exercise-data y TLP:RED.'
     );
   };
 
-  const cabeceraVista = infoVistaActual[vistaActiva];
+  if (!sesion) {
+    return <LoginPage onLoginExitoso={handleLoginExitoso} />;
+  }
+
+  if (sesion.rol === 'medico') {
+    return (
+      <MedicalPortalPage
+        sesion={sesion}
+        onCerrarSesion={handleCerrarSesion}
+        onRegistrarAuditoria={agregarRegistroAuditoria}
+      />
+    );
+  }
+
+  const cabeceraVista = infoVistaSoc[vistaActiva];
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100 text-slate-900 lg:flex-row">
+    <div className="bg-institutional-canvas flex min-h-screen flex-col overflow-x-hidden text-[#073B2C] lg:flex-row">
       <HeaderConfianza
         estado={estadoSalud}
         vistaActiva={vistaActiva}
         onCambiarVista={setVistaActiva}
         usandoMocks={usandoMocks}
+        sesion={sesion}
+        onCerrarSesion={handleCerrarSesion}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Barra contextual superior */}
-        <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-xs sm:px-6">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900 sm:text-base">
+        <div className="sticky top-0 z-20 border-b border-[#CDE2D7] bg-white/95 px-4 py-3.5 shadow-2xs backdrop-blur-xs sm:px-6">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-base font-bold text-[#073B2C] sm:text-lg">
                 {cabeceraVista.titulo}
               </h2>
-              <p className="text-xs text-slate-500">{cabeceraVista.subtitulo}</p>
+              <p className="text-xs text-slate-600 sm:text-sm">{cabeceraVista.subtitulo}</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* Interruptor Lectura simple vs Detalle técnico */}
-              <div
-                className="inline-flex rounded-sm border border-slate-300 bg-slate-100 p-0.5 text-xs shadow-xs"
-                role="group"
-                aria-label="Nivel de lectura"
-              >
-                <button
-                  type="button"
-                  onClick={() => setModoLectura('simple')}
-                  className={`rounded-xs px-3 py-1.5 font-semibold transition-all ${
-                    modoLectura === 'simple'
-                      ? 'bg-teal-600 text-white shadow-xs'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  Lectura simple
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModoLectura('tecnico')}
-                  className={`rounded-xs px-3 py-1.5 font-semibold transition-all ${
-                    modoLectura === 'tecnico'
-                      ? 'bg-slate-700 text-white shadow-xs'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  Detalle técnico
-                </button>
-              </div>
-
+            <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
+              <span className="inline-flex min-h-[38px] items-center rounded-lg border border-[#0B5D46]/30 bg-[#E3F2EC] px-3 py-1.5 font-bold text-[#063729]">
+                ROL: SOC TÉCNICO
+              </span>
               {vistaActiva !== 'report-center' && (
                 <button
                   type="button"
                   onClick={() => setVistaActiva('report-center')}
-                  className="rounded-sm border border-teal-600 bg-teal-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-teal-700"
+                  className="btn-touch min-h-[42px] cursor-pointer rounded-lg bg-[#0B5D46] px-4 py-2 font-bold text-white shadow-xs hover:bg-[#063729]"
                 >
-                  Reporte F-11
+                  PDF Técnico F-11
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6">
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6 sm:py-6">
           {vistaActiva === 'dashboard' && (
             <DashboardPage
-              modoLectura={modoLectura}
               onIrAuditoria={() => setVistaActiva('report-center')}
               onVerLineaTiempo={() => setVistaActiva('timeline')}
             />
@@ -201,7 +213,6 @@ export function App() {
           {vistaActiva === 'timeline' && (
             <TimelinePage
               campanas={campanasMock}
-              modoLectura={modoLectura}
               onRegistrarBreakGlass={handleRegistrarBreakGlass}
             />
           )}
@@ -210,7 +221,6 @@ export function App() {
             <ThreatIntelPage
               adversarios={adversariosMock}
               artefactos={artefactosMock}
-              modoLectura={modoLectura}
               onExportarStix={handleExportarStix}
             />
           )}
@@ -219,16 +229,15 @@ export function App() {
             <ReportCenterPage
               secciones={seccionesF11Mock}
               registrosAuditoria={registrosAuditoria}
-              modoLectura={modoLectura}
               onRegistrarEventoAuditoria={(tipo, det) =>
-                agregarRegistroAuditoria(tipo, det)
+                agregarRegistroAuditoria(tipo, det, sesion.usuario)
               }
             />
           )}
         </main>
 
-        <footer className="border-t border-slate-200 bg-white px-4 py-2.5 text-center text-[11px] text-slate-400">
-          AegisHealth-CTI · Análisis local sobre datos sintéticos de práctica · Privacidad LOPDP protegida
+        <footer className="border-t border-[#CDE2D7] bg-white px-4 py-3 text-center font-mono text-xs text-slate-600">
+          AEGISHEALTH-CTI · ZERO-EGRESS VERIFICADO · LOPDP ART. 25 · DATOS SINTÉTICOS TLP:RED
         </footer>
       </div>
     </div>

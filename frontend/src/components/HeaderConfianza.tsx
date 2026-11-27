@@ -1,243 +1,249 @@
+import type { SesionUsuario } from '../auth/rolesAuth';
 import {
-    ChartBarIcon,
-    DocumentCheckIcon,
-    LockIcon,
-    ShieldIcon,
-    TargetIcon,
-    TimelineIcon,
+  ChartBarIcon,
+  DocumentCheckIcon,
+  LockIcon,
+  ShieldIcon,
+  TargetIcon,
+  TimelineIcon,
 } from './AppIcons';
 
 export type VistaActiva = 'dashboard' | 'timeline' | 'threat-intel' | 'report-center';
 
 export interface EstadoSaludApi {
-    postgresReady: boolean;
-    ollamaReady: boolean;
-    zeroEgress: boolean;
-    apiDisponible: boolean;
+  postgresReady: boolean;
+  ollamaReady: boolean;
+  zeroEgress: boolean;
+  apiDisponible: boolean;
 }
 
 interface HeaderConfianzaProps {
-    estado: EstadoSaludApi;
-    vistaActiva: VistaActiva;
-    onCambiarVista: (vista: VistaActiva) => void;
-    usandoMocks: boolean;
+  estado: EstadoSaludApi;
+  vistaActiva: VistaActiva;
+  onCambiarVista: (vista: VistaActiva) => void;
+  usandoMocks: boolean;
+  sesion: SesionUsuario;
+  onCerrarSesion: () => void;
 }
 
 const itemsNavegacion: {
-    id: VistaActiva;
-    grupo: 'ANÁLISIS' | 'RESPUESTA';
-    etiqueta: string;
-    descripcion: string;
-    Icon: typeof ChartBarIcon;
+  id: VistaActiva;
+  codigo: string;
+  etiqueta: string;
+  subtitulo: string;
+  Icon: typeof ChartBarIcon;
 }[] = [
-    {
-        id: 'dashboard',
-        grupo: 'ANÁLISIS',
-        etiqueta: 'Resumen y mapa horario',
-        descripcion: 'Actividad general y alertas',
-        Icon: ChartBarIcon,
-    },
-    {
-        id: 'timeline',
-        grupo: 'ANÁLISIS',
-        etiqueta: 'Secuencia y Break-Glass',
-        descripcion: 'Orden de eventos y privacidad',
-        Icon: TimelineIcon,
-    },
-    {
-        id: 'threat-intel',
-        grupo: 'RESPUESTA',
-        etiqueta: 'Adversarios y reglas',
-        descripcion: 'Comportamientos y bloqueos',
-        Icon: TargetIcon,
-    },
-    {
-        id: 'report-center',
-        grupo: 'RESPUESTA',
-        etiqueta: 'Reporte F-11 y auditoría',
-        descripcion: '8 secciones e historial',
-        Icon: DocumentCheckIcon,
-    },
+  {
+    id: 'dashboard',
+    codigo: '01',
+    etiqueta: 'Telemetría & IPE',
+    subtitulo: '10M streaming, ML y mapa 24x31',
+    Icon: ChartBarIcon,
+  },
+  {
+    id: 'timeline',
+    codigo: '02',
+    etiqueta: 'Kill Chain & Break-Glass',
+    subtitulo: 'Cruce FW <-> MedSys +12h',
+    Icon: TimelineIcon,
+  },
+  {
+    id: 'threat-intel',
+    codigo: '03',
+    etiqueta: 'MITRE · Sigma · STIX',
+    subtitulo: 'IoA/IoC y exportación MISP',
+    Icon: TargetIcon,
+  },
+  {
+    id: 'report-center',
+    codigo: '04',
+    etiqueta: 'Reporte F-11 & Auditoría',
+    subtitulo: 'PDF técnico + Hash-Chain',
+    Icon: DocumentCheckIcon,
+  },
 ];
 
 export const HeaderConfianza = ({
-    estado,
-    vistaActiva,
-    onCambiarVista,
-    usandoMocks,
+  estado,
+  vistaActiva,
+  onCambiarVista,
+  usandoMocks,
+  sesion,
+  onCerrarSesion,
 }: HeaderConfianzaProps) => {
-    const aislado = estado.apiDisponible && estado.zeroEgress;
-    const iaLista = estado.apiDisponible && estado.ollamaReady;
-    const bdLista = estado.apiDisponible && estado.postgresReady;
+  const aislado = estado.apiDisponible && estado.zeroEgress;
+  const iaLista = estado.apiDisponible && estado.ollamaReady;
+  const bdLista = estado.apiDisponible && estado.postgresReady;
 
-    return (
-        <>
-            {/* Barra superior móvil/tablet (< lg) */}
-            <header className="border-b border-slate-200 bg-white shadow-sm text-slate-900 lg:hidden">
-                <div className="px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-sm border border-teal-200 bg-teal-50 text-teal-700">
-                                <ShieldIcon className="h-4 w-4" />
-                            </span>
-                            <div>
-                                <p className="text-sm font-bold tracking-tight text-slate-900">
-                                    AegisHealth-CTI
-                                </p>
-                                <p className="text-[11px] text-slate-500">
-                                    {usandoMocks ? 'Entorno de práctica clínica' : 'Servicio local activo'}
-                                </p>
-                            </div>
-                        </div>
+  return (
+    <>
+      {/* Barra móvil/tablet (< lg) con botones amplios y navegación horizontal cómoda */}
+      <header className="border-b border-[#CDE2D7] bg-white text-[#073B2C] shadow-xs lg:hidden">
+        <div className="bg-gradient-to-r from-[#063729] to-[#0B5D46] px-4 py-3 text-white">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/30 bg-white/15 text-white">
+                <ShieldIcon className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate font-mono text-xs font-bold tracking-wider text-white">
+                  AEGISHEALTH · SOC TÉCNICO
+                </p>
+                <p className="truncate font-mono text-[11px] text-emerald-100">{sesion.usuario}</p>
+              </div>
+            </div>
 
-                        <span
-                            className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[11px] font-semibold ${
-                                aislado
-                                    ? 'border-teal-200 bg-teal-50 text-teal-700'
-                                    : 'border-amber-200 bg-amber-50 text-amber-700'
-                            }`}
-                        >
-                            <span
-                                className={`h-1.5 w-1.5 rounded-full ${
-                                    aislado ? 'bg-teal-500' : 'bg-amber-500'
-                                }`}
-                            />
-                            {aislado ? 'Red aislada' : 'Revisar red'}
-                        </span>
-                    </div>
+            <button
+              type="button"
+              onClick={onCerrarSesion}
+              className="btn-touch min-h-[40px] shrink-0 cursor-pointer rounded-lg border border-white/35 bg-white/15 px-3.5 py-2 font-mono text-xs font-bold text-white hover:bg-white/25"
+            >
+              Cambiar perfil
+            </button>
+          </div>
+        </div>
 
-                    <nav className="mt-3 flex gap-1.5 overflow-x-auto pb-1" aria-label="Navegación móvil">
-                        {itemsNavegacion.map((item) => {
-                            const activa = vistaActiva === item.id;
-                            const Icono = item.Icon;
-                            return (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => onCambiarVista(item.id)}
-                                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-sm border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
-                                        activa
-                                            ? 'border-teal-500 bg-teal-600 text-white'
-                                            : 'border-slate-200 bg-white text-slate-700 hover:border-teal-300 hover:text-teal-700'
-                                    }`}
-                                >
-                                    <Icono className="h-3.5 w-3.5" />
-                                    {item.etiqueta}
-                                </button>
-                            );
-                        })}
-                    </nav>
-                </div>
-            </header>
+        <nav className="flex gap-2 overflow-x-auto bg-[#F4FAF7] px-4 py-2.5" aria-label="Navegación SOC móvil">
+          {itemsNavegacion.map((item) => {
+            const activa = vistaActiva === item.id;
+            const Icono = item.Icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onCambiarVista(item.id)}
+                className={`btn-touch inline-flex min-h-[42px] shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 font-mono text-xs font-bold ${
+                  activa
+                    ? 'border-[#0B5D46] bg-[#0B5D46] text-white shadow-xs'
+                    : 'border-[#CDE2D7] bg-white text-[#073B2C] hover:border-[#0B5D46]/60 hover:bg-[#E3F2EC]'
+                }`}
+              >
+                <Icono className="h-4 w-4 shrink-0" />
+                {item.etiqueta}
+              </button>
+            );
+          })}
+        </nav>
+      </header>
 
-            {/* Barra lateral fija clínico-operativa en escritorio (>= lg) */}
-            <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-slate-200 bg-white shadow-sm text-slate-900 lg:flex">
-                <div className="p-4">
-                    <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-teal-200 bg-teal-50 text-teal-700">
-                            <ShieldIcon className="h-5 w-5" />
-                        </div>
-                        <div>
-                            <h1 className="text-sm font-bold tracking-tight text-slate-900">
-                                AegisHealth-CTI
-                            </h1>
-                            <p className="text-[11px] font-medium text-teal-600">
-                                Centro de Amenazas · Ficha F-11
-                            </p>
-                        </div>
-                    </div>
+      {/* Riel institucional lateral fijo (>= lg) */}
+      <aside className="hidden w-76 shrink-0 flex-col justify-between border-r border-[#CDE2D7] bg-white text-[#073B2C] shadow-xs lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto">
+        <div>
+          {/* Encabezado institucional verde bosque */}
+          <div className="bg-gradient-to-br from-[#063729] via-[#0B5D46] to-[#0F7B5C] p-5 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/30 bg-white/15 text-white">
+                <ShieldIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="font-mono text-sm font-bold tracking-[0.14em] text-white">
+                  AEGISHEALTH · CTI
+                </h1>
+                <p className="font-mono text-[11px] text-emerald-100">
+                  CONSOLA TÉCNICA SOC
+                </p>
+              </div>
+            </div>
+            <div className="mt-3.5 flex items-center justify-between rounded-lg border border-white/25 bg-white/10 px-3 py-2 font-mono text-xs">
+              <span className="text-emerald-100">OPERADOR:</span>
+              <span className="font-bold text-white">{sesion.usuario}</span>
+            </div>
+          </div>
 
-                    <nav className="mt-5 space-y-5" aria-label="Vistas principales">
-                        {(['ANÁLISIS', 'RESPUESTA'] as const).map((grupo) => (
-                            <div key={grupo}>
-                                <p className="px-1 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                    {grupo === 'ANÁLISIS' ? '1. Investigación' : '2. Controles y entrega'}
-                                </p>
-                                <div className="mt-2 space-y-1">
-                                    {itemsNavegacion
-                                        .filter((item) => item.grupo === grupo)
-                                        .map((item) => {
-                                            const activa = vistaActiva === item.id;
-                                            const Icono = item.Icon;
-                                            return (
-                                                <button
-                                                    key={item.id}
-                                                    type="button"
-                                                    onClick={() => onCambiarVista(item.id)}
-                                                    aria-current={activa ? 'page' : undefined}
-                                                    className={`flex w-full items-center gap-2.5 rounded-sm border px-2.5 py-2.5 text-left transition-all duration-150 ${
-                                                        activa
-                                                            ? 'border-teal-200 bg-teal-50 text-teal-800 shadow-xs'
-                                                            : 'border-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900'
-                                                    }`}
-                                                >
-                                                    <span
-                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xs border ${
-                                                            activa
-                                                                ? 'border-teal-300 bg-teal-100 text-teal-700'
-                                                                : 'border-slate-200 bg-slate-100 text-slate-500'
-                                                        }`}
-                                                    >
-                                                        <Icono className="h-3.5 w-3.5" />
-                                                    </span>
-                                                    <span className="min-w-0">
-                                                        <span className={`block truncate text-xs font-bold ${activa ? 'text-teal-800' : 'text-slate-800'}`}>
-                                                            {item.etiqueta}
-                                                        </span>
-                                                        <span className={`block truncate text-[11px] ${activa ? 'text-teal-600' : 'text-slate-500'}`}>
-                                                            {item.descripcion}
-                                                        </span>
-                                                    </span>
-                                                    {activa && (
-                                                        <span className="ml-auto h-4 w-0.5 rounded-full bg-teal-500" />
-                                                    )}
-                                                </button>
-                                            );
-                                        })}
-                                </div>
-                            </div>
-                        ))}
-                    </nav>
-                </div>
+          <nav className="space-y-2 p-4" aria-label="Módulos técnicos SOC">
+            <p className="px-1.5 pb-1 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+              Módulos de análisis
+            </p>
+            {itemsNavegacion.map((item) => {
+              const activa = vistaActiva === item.id;
+              const Icono = item.Icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onCambiarVista(item.id)}
+                  aria-current={activa ? 'page' : undefined}
+                  className={`btn-touch flex min-h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left ${
+                    activa
+                      ? 'border-[#0B5D46] bg-[#0B5D46] text-white shadow-sm'
+                      : 'border-transparent bg-transparent text-[#073B2C] hover:border-[#CDE2D7] hover:bg-[#F4FAF7] hover:text-[#0B5D46]'
+                  }`}
+                >
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${
+                      activa
+                        ? 'border-white/30 bg-white/15 text-white'
+                        : 'border-[#CDE2D7] bg-[#F4FAF7] text-[#0B5D46]'
+                    }`}
+                  >
+                    <Icono className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-mono text-xs font-bold">
+                      {item.codigo}. {item.etiqueta}
+                    </span>
+                    <span
+                      className={`mt-0.5 block truncate text-xs ${
+                        activa ? 'text-emerald-100' : 'text-slate-600'
+                      }`}
+                    >
+                      {item.subtitulo}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-                {/* Resguardo del entorno */}
-                <div className="border-t border-slate-100 bg-slate-50 p-4">
-                    <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-bold text-slate-700">Resguardo del entorno</span>
-                        <span className="rounded-xs border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
-                            {usandoMocks ? 'Datos de práctica' : 'Servicio local'}
-                        </span>
-                    </div>
+        {/* Telemetría de integridad + cambio de perfil */}
+        <div className="space-y-3.5 border-t border-[#CDE2D7] bg-[#F4FAF7] p-4">
+          <div className="flex items-center justify-between font-mono text-xs">
+            <span className="font-bold uppercase tracking-wider text-slate-600">
+              Estado del nodo
+            </span>
+            <span className="rounded-md border border-[#CDE2D7] bg-white px-2.5 py-0.5 text-[11px] font-bold text-[#0B5D46]">
+              {usandoMocks ? 'SIMULACIÓN' : 'API LOCAL'}
+            </span>
+          </div>
 
-                    <ul className="mt-3 space-y-2 text-[11px]">
-                        <li className="flex items-center justify-between text-slate-700">
-                            <span className="inline-flex items-center gap-1.5">
-                                <LockIcon className="h-3 w-3 text-teal-600" />
-                                Red aislada
-                            </span>
-                            <span className={aislado ? 'font-mono font-bold text-teal-600' : 'font-mono font-bold text-amber-600'}>
-                                {aislado ? 'VERIFICADO' : 'REVISAR'}
-                            </span>
-                        </li>
-                        <li className="flex items-center justify-between text-slate-700">
-                            <span>Privacidad LOPDP</span>
-                            <span className="font-mono font-bold text-teal-600">PROTEGIDA</span>
-                        </li>
-                        <li className="flex items-center justify-between text-slate-700">
-                            <span>Asistente local</span>
-                            <span className={iaLista ? 'font-mono font-bold text-teal-600' : 'font-mono text-slate-400'}>
-                                {iaLista ? 'ACTIVO' : 'EN ESPERA'}
-                            </span>
-                        </li>
-                        <li className="flex items-center justify-between text-slate-700">
-                            <span>Base de datos</span>
-                            <span className={bdLista ? 'font-mono font-bold text-teal-600' : 'font-mono font-bold text-rose-600'}>
-                                {bdLista ? 'OPERATIVA' : 'SIN CONEXIÓN'}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-        </>
-    );
+          <ul className="space-y-2 font-mono text-xs">
+            <li className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-slate-600">
+                <LockIcon className="h-3.5 w-3.5 text-[#0B5D46]" />
+                Zero-Egress
+              </span>
+              <span className={aislado ? 'font-bold text-[#0B5D46]' : 'font-bold text-amber-700'}>
+                {aislado ? 'VERIFICADO' : 'REVISAR'}
+              </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-slate-600">LOPDP HMAC</span>
+              <span className="font-bold text-[#0B5D46]">ACTIVA (0 PII)</span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-slate-600">PostgreSQL 16</span>
+              <span className={bdLista ? 'font-bold text-[#0B5D46]' : 'font-bold text-rose-700'}>
+                {bdLista ? 'ONLINE' : 'OFFLINE'}
+              </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-slate-600">Ollama GPU</span>
+              <span className={iaLista ? 'font-bold text-[#0D6E52]' : 'text-slate-500'}>
+                {iaLista ? 'READY' : 'STANDBY'}
+              </span>
+            </li>
+          </ul>
+
+          <button
+            type="button"
+            onClick={onCerrarSesion}
+            className="btn-touch min-h-[44px] w-full cursor-pointer rounded-lg border border-[#0B5D46]/40 bg-white px-4 py-2.5 font-mono text-xs font-bold text-[#0B5D46] hover:bg-[#0B5D46] hover:text-white"
+          >
+            Cambiar rol / Cerrar sesión
+          </button>
+        </div>
+      </aside>
+    </>
+  );
 };
