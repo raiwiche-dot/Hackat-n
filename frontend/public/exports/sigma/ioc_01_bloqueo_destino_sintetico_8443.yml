@@ -1,0 +1,24 @@
+title: Conexión a IP externa del caso (IoC sintético)
+id: 036dc023-7782-5cad-95de-a02d550f90a0
+name: aegis_ioc01_destino_externo
+status: experimental
+description: Dato sintético de ejercicio (Hackatón IESS 2026). No usar como inteligencia
+  real. Conexión hacia la IP externa observada en la exfiltración.
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.exfiltration
+- attack.t1048.002
+logsource:
+  product: aegishealth
+  category: firewall
+detection:
+  seleccion:
+    dst_ip:
+    - 186.46.219.18
+    dst_port:
+    - 8443
+  condition: seleccion
+falsepositives:
+- Ninguno conocido
+level: critical

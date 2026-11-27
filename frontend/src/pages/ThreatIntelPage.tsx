@@ -3,56 +3,59 @@ import type {
     PerfilAdversario,
     ReglaArtefacto,
 } from '../mocks/mockData';
+import {
+    CheckIcon,
+    CopyIcon,
+    DownloadIcon,
+    TargetIcon,
+} from '../components/AppIcons';
 
 interface ThreatIntelPageProps {
     adversarios: PerfilAdversario[];
     artefactos: ReglaArtefacto[];
+    modoLectura?: 'simple' | 'tecnico';
     onExportarStix: () => void;
 }
 
-const detalleTecnicasMitre: Record<string, { nombre: string; explicacion: string }> = {
+const detalleTecnicasMitre: Record<string, { nombre: string; tactica: string; explicacion: string }> = {
     T1213: {
-        nombre: 'Extracción de repositorios',
-        explicacion: 'Consultas rápidas y masivas sobre bases o historias clínicas.',
+        nombre: 'Data from Information Repositories',
+        tactica: 'Collection',
+        explicacion: 'Consultas rápidas y masivas sobre repositorios de registros clínicos.',
     },
     T1074: {
-        nombre: 'Preparación de datos',
-        explicacion: 'Agrupación de archivos en una carpeta temporal antes de sacarlos.',
+        nombre: 'Data Staged',
+        tactica: 'Collection',
+        explicacion: 'Agrupación temporal de archivos previa a la transferencia saliente.',
     },
     'T1110.001': {
-        nombre: 'Adivinación de contraseñas',
-        explicacion: 'Intentos repetidos de acceso en ráfaga sobre servicios administrativos.',
+        nombre: 'Brute Force: Password Guessing',
+        tactica: 'Credential Access',
+        explicacion: 'Ráfagas de intentos fallidos sobre puertos administrativos.',
     },
     T1078: {
-        nombre: 'Uso de cuentas válidas',
-        explicacion: 'Acceso mediante credenciales técnicas existentes o reutilizadas.',
+        nombre: 'Valid Accounts',
+        tactica: 'Initial Access / Persistence',
+        explicacion: 'Uso o reutilización de credenciales técnicas existentes.',
     },
     T1098: {
-        nombre: 'Manipulación de cuentas',
-        explicacion: 'Cambios o abuso de permisos para sostener el acceso.',
+        nombre: 'Account Manipulation',
+        tactica: 'Persistence / Privilege Escalation',
+        explicacion: 'Alteración o abuso de atributos y sesiones privilegiadas.',
     },
     'T1048.002': {
-        nombre: 'Exfiltración cifrada (puerto 8443)',
-        explicacion: 'Envío de información hacia el exterior fuera de los canales habituales.',
+        nombre: 'Exfiltration Over Asymmetric Encrypted Non-C2 Protocol',
+        tactica: 'Exfiltration',
+        explicacion: 'Salida cifrada hacia puerto 8443/tcp fuera de canales autorizados.',
     },
 };
 
 const tecnicasMitreReferencia = Object.keys(detalleTecnicasMitre);
 
-const traduccionAdmiralty: Record<string, string> = {
-    A2: 'Evidencia muy confiable (A2)',
-    B2: 'Evidencia confiable (B2)',
-};
-
-const traduccionActor: Record<PerfilAdversario['tipoActor'], string> = {
-    HIBRIDO: 'Actúa desde el exterior hacia la red interna',
-    EXTERNO: 'Ataque desde el perímetro externo',
-    INTERNO: 'Actividad originada dentro de la red',
-};
-
 export const ThreatIntelPage = ({
     adversarios,
     artefactos,
+    modoLectura = 'simple',
     onExportarStix,
 }: ThreatIntelPageProps) => {
     const [pestanaYaml, setPestanaYaml] = useState<'IoA' | 'IoC'>('IoA');
@@ -63,6 +66,7 @@ export const ThreatIntelPage = ({
     const [copiado, setCopiado] = useState(false);
     const [stixMsg, setStixMsg] = useState(false);
 
+    const esTecnico = modoLectura === 'tecnico';
     const reglasIoA = artefactos.filter((a) => a.tipo === 'IoA');
     const reglasIoC = artefactos.filter((a) => a.tipo === 'IoC');
 
@@ -97,147 +101,148 @@ export const ThreatIntelPage = ({
     const infoTecnica = detalleTecnicasMitre[tecnicaActiva];
 
     return (
-        <section className="space-y-6">
-            {/* Encabezado y botón MISP / STIX 2.1 */}
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <h1 className="text-base font-bold text-slate-900 sm:text-lg">
-                            ¿Quién está detrás y cómo lo detectamos?
-                        </h1>
-                        <p className="mt-1 text-sm text-slate-600">
-                            Perfilamiento de adversarios, técnicas usadas y reglas listas para compartir en herramientas libres como MISP (STIX 2.1).
+        <section className="space-y-4 text-slate-900">
+            {/* Cabecera concisa */}
+            <div className="rounded-xs border border-slate-300 border-l-4 border-l-teal-600 bg-white p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 font-mono text-[11px] text-slate-700">
+                            <TargetIcon className="h-3.5 w-3.5 text-slate-700" />
+                            <span>PERFILES DE AMENAZA Y CONTROLES</span>
+                        </div>
+                        <h2 className="text-sm font-semibold text-slate-900 sm:text-base">
+                            Adversarios identificados y reglas para bloquearlos
+                        </h2>
+                        <p className="text-xs text-slate-600">
+                            Resumen de quién realiza los ataques y qué alertas se activan para proteger la red clínica.
                         </p>
                     </div>
                     <button
                         type="button"
                         onClick={handleExportarClick}
-                        className="shrink-0 self-start rounded-lg bg-blue-800 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-900 sm:text-sm lg:self-center"
+                        className="inline-flex shrink-0 items-center gap-2 self-start rounded-xs border border-teal-600 bg-teal-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:border-teal-700 hover:bg-teal-700 lg:self-center"
                     >
-                        Exportar para MISP (STIX 2.1)
+                        <DownloadIcon className="h-3.5 w-3.5" />
+                        Exportar alertas (MISP / STIX)
                     </button>
                 </div>
 
                 {stixMsg && (
-                    <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs text-emerald-800">
-                        Se descargó <code>aegishealth_stix_2_1_sintetico.json</code> marcado como dato sintético y se registró en la auditoría.
+                    <div className="mt-3 rounded-xs border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+                        Archivo aegishealth_stix_2_1_sintetico.json descargado y registrado en auditoría.
                     </div>
                 )}
             </div>
 
             {/* Perfiles de Adversarios */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {adversarios.map((adv) => {
-                    const nivelPct = Math.round(adv.anomalyScore * 100);
-                    return (
-                        <article
-                            key={adv.id}
-                            className="rounded-lg border border-slate-200 bg-white p-5 shadow-2xs"
-                        >
-                            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-semibold text-slate-700">
-                                    {adv.id} · {traduccionActor[adv.tipoActor]}
-                                </span>
-                                <span className="rounded-full bg-blue-50 px-2.5 py-0.5 font-semibold text-blue-800">
-                                    {traduccionAdmiralty[adv.calificacionAdmiralty] ?? adv.calificacionAdmiralty}
-                                </span>
-                            </div>
-
-                            <h2 className="mt-3 text-base font-bold text-slate-900">
-                                {adv.nombreClave}
-                            </h2>
-                            <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
-                                {adv.resumen}
-                            </p>
-
-                            <div className="mt-4 rounded-md bg-slate-50 p-3">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="font-medium text-slate-700">
-                                        Nivel de comportamiento anómalo
+                {adversarios.map((adv) => (
+                    <article
+                        key={adv.id}
+                        className="rounded-xs border border-slate-300 border-l-4 border-l-teal-500 bg-white p-4"
+                    >
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-300 pb-2 text-xs">
+                            <span className="rounded-xs border border-teal-200 bg-teal-50 px-2 py-1 font-mono font-bold text-teal-800">
+                                {adv.id} · {adv.tipoActor}
+                            </span>
+                            {esTecnico && (
+                                <div className="flex items-center gap-2 font-mono">
+                                    <span className="rounded-xs border border-slate-300 bg-slate-50 px-2 py-0.5 text-slate-800">
+                                        Admiralty: {adv.calificacionAdmiralty}
                                     </span>
-                                    <span className="font-bold text-amber-800">{nivelPct}%</span>
+                                    <span className="rounded-xs border border-amber-300 bg-amber-50 px-2 py-0.5 tabular-nums text-amber-800">
+                                        Score: {adv.anomalyScore == null ? 'Sin puntaje disponible' : adv.anomalyScore.toFixed(2)}
+                                    </span>
                                 </div>
-                                <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-200">
-                                    <div
-                                        className="h-full rounded-full bg-amber-600"
-                                        style={{ width: `${nivelPct}%` }}
-                                    />
-                                </div>
-                            </div>
+                            )}
+                        </div>
 
-                            <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                                <span className="text-xs font-medium text-slate-500">Técnicas:</span>
+                        <h3 className="mt-2.5 text-sm font-semibold text-slate-900">
+                            {adv.nombreClave}
+                        </h3>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                            {adv.resumen}
+                        </p>
+
+                        {esTecnico && (
+                            <div className="mt-3 flex flex-wrap gap-1.5">
                                 {adv.tecnicasMitre.map((tec) => (
                                     <button
                                         key={tec}
                                         type="button"
                                         onClick={() => setTecnicaActiva(tec)}
-                                        className={`rounded border px-2 py-0.5 font-mono text-xs transition ${
+                                        className={`rounded-xs border px-2 py-0.5 font-mono text-[11px] transition-colors ${
                                             tecnicaActiva === tec
-                                                ? 'border-blue-700 bg-blue-800 font-semibold text-white'
-                                                : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                                                ? 'border-slate-500 bg-slate-200 font-semibold text-slate-900'
+                                                : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-slate-400'
                                         }`}
                                     >
                                         {tec}
                                     </button>
                                 ))}
                             </div>
-                        </article>
-                    );
-                })}
+                        )}
+                    </article>
+                ))}
             </div>
 
-            {/* Explicador interactivo de técnicas MITRE */}
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-2xs">
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-semibold text-slate-700">
-                        ¿Qué significa cada técnica MITRE?
-                    </span>
-                    {tecnicasMitreReferencia.map((t) => (
-                        <button
-                            key={t}
-                            type="button"
-                            onClick={() => setTecnicaActiva(t)}
-                            className={`rounded-md border px-2.5 py-1 font-mono text-xs transition ${
-                                tecnicaActiva === t
-                                    ? 'border-blue-700 bg-blue-800 font-semibold text-white'
-                                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                            }`}
-                        >
-                            {t}
-                        </button>
-                    ))}
+            {/* Diccionario MITRE solo en Detalle técnico */}
+            {esTecnico && (
+                <div className="rounded-xs border border-slate-300 bg-white p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-semibold text-slate-700">
+                            MATRIZ MITRE ATT&amp;CK:
+                        </span>
+                        {tecnicasMitreReferencia.map((t) => (
+                            <button
+                                key={t}
+                                type="button"
+                                onClick={() => setTecnicaActiva(t)}
+                                className={`rounded-xs border px-2 py-0.5 font-mono text-[11px] transition-colors ${
+                                    tecnicaActiva === t
+                                        ? 'border-slate-500 bg-slate-200 font-semibold text-slate-900'
+                                        : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-slate-400 hover:text-slate-900'
+                                }`}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                    {infoTecnica && (
+                        <div className="mt-2.5 rounded-xs border border-slate-300 bg-slate-50 px-3 py-2 text-xs">
+                            <span className="font-mono font-semibold text-slate-900">{tecnicaActiva}</span>
+                            <span className="mx-2 text-slate-500">|</span>
+                            <span className="font-medium text-slate-700">{infoTecnica.nombre}</span>
+                            <span className="ml-2 rounded-xs border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[10px] text-slate-700">
+                                {infoTecnica.tactica}
+                            </span>
+                            <p className="mt-1 text-slate-600">{infoTecnica.explicacion}</p>
+                        </div>
+                    )}
                 </div>
-                {infoTecnica && (
-                    <p className="mt-2.5 rounded-md bg-slate-50 px-3.5 py-2 text-xs text-slate-700">
-                        <strong className="text-slate-900">
-                            {tecnicaActiva} — {infoTecnica.nombre}:
-                        </strong>{' '}
-                        {infoTecnica.explicacion}
-                    </p>
-                )}
-            </div>
+            )}
 
-            {/* Reglas de detección: IoA (comportamiento) vs IoC (indicador puntual) */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                <div className="space-y-3 lg:col-span-5">
-                    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-2xs">
-                        <h3 className="text-sm font-bold text-blue-900">
-                            IoA · Detectar por comportamiento
+            {/* IoA vs IoC: vista limpia en simple, visor Sigma YAML completo en técnico */}
+            <div className={`grid grid-cols-1 gap-4 ${esTecnico ? 'lg:grid-cols-12' : 'md:grid-cols-2'}`}>
+                <div className={esTecnico ? 'space-y-3 lg:col-span-5' : 'contents'}>
+                    <div className="rounded-xs border border-slate-300 border-t-4 border-t-teal-600 bg-white p-4">
+                        <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                            <span className="rounded-xs border border-teal-300 bg-teal-50 px-2 py-0.5 font-mono text-[11px] text-teal-800">IOA</span>
+                            Detección preventiva
                         </h3>
-                        <p className="mt-0.5 text-xs text-slate-600">
-                            Sirve incluso si el atacante cambia de IP, porque vigila la secuencia de acciones.
+                        <p className="mt-1 text-xs text-slate-600">
+                            Vigila secuencias sospechosas aunque cambie la dirección IP.
                         </p>
-                        <div className="mt-3 space-y-2">
+                        <div className="mt-2.5 space-y-2">
                             {reglasIoA.map((r) => (
                                 <button
                                     key={r.id}
                                     type="button"
                                     onClick={() => handleSeleccionarRegla(r)}
-                                    className={`w-full rounded-md border p-3 text-left text-xs transition ${
-                                        reglaActiva?.id === r.id
-                                            ? 'border-blue-600 bg-blue-50/70'
-                                            : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                                    className={`w-full rounded-xs border p-2.5 text-left text-xs transition-colors ${
+                                        esTecnico && reglaActiva?.id === r.id
+                                            ? 'border-slate-500 bg-slate-100'
+                                            : 'border-slate-300 bg-slate-50 hover:border-slate-400'
                                     }`}
                                 >
                                     <p className="font-semibold text-slate-900">{r.nombre}</p>
@@ -247,23 +252,24 @@ export const ThreatIntelPage = ({
                         </div>
                     </div>
 
-                    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-2xs">
-                        <h3 className="text-sm font-bold text-amber-900">
-                            IoC · Bloqueo puntual inmediato
+                    <div className="rounded-xs border border-slate-300 border-t-4 border-t-amber-500 bg-white p-4">
+                        <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                            <span className="rounded-xs border border-amber-300 bg-amber-50 px-2 py-0.5 font-mono text-[11px] text-amber-800">IOC</span>
+                            Bloqueo puntual
                         </h3>
-                        <p className="mt-0.5 text-xs text-slate-600">
-                            Bloquea de forma directa la IP y puerto específicos detectados en la evidencia.
+                        <p className="mt-1 text-xs text-slate-600">
+                            Bloquea de forma directa la IP y puerto observados en el incidente.
                         </p>
-                        <div className="mt-3 space-y-2">
+                        <div className="mt-2.5 space-y-2">
                             {reglasIoC.map((r) => (
                                 <button
                                     key={r.id}
                                     type="button"
                                     onClick={() => handleSeleccionarRegla(r)}
-                                    className={`w-full rounded-md border p-3 text-left text-xs transition ${
-                                        reglaActiva?.id === r.id
-                                            ? 'border-amber-600 bg-amber-50/70'
-                                            : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                                    className={`w-full rounded-xs border p-2.5 text-left text-xs transition-colors ${
+                                        esTecnico && reglaActiva?.id === r.id
+                                            ? 'border-amber-500 bg-amber-50'
+                                            : 'border-slate-300 bg-slate-50 hover:border-slate-400'
                                     }`}
                                 >
                                     <p className="font-semibold text-slate-900">{r.nombre}</p>
@@ -274,65 +280,88 @@ export const ThreatIntelPage = ({
                     </div>
                 </div>
 
-                {/* Visor de regla Sigma */}
-                <div className="flex flex-col overflow-hidden rounded-lg border border-slate-300 bg-slate-900 shadow-2xs lg:col-span-7">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 bg-slate-800 px-4 py-2.5">
-                        <div className="flex items-center gap-2 text-xs">
+                {/* Visor de código Sigma YAML solo en Detalle técnico */}
+                {esTecnico && (
+                    <div className="flex flex-col overflow-hidden rounded-xs border border-slate-300 bg-white lg:col-span-7">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-300 bg-slate-50 px-3.5 py-2">
+                            <div className="flex items-center gap-2 font-mono text-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setPestanaYaml('IoA');
+                                        if (reglasIoA[0]) setReglaSeleccionadaId(reglasIoA[0].id);
+                                    }}
+                                    className={`rounded-xs border px-2 py-1 transition-colors ${
+                                        pestanaYaml === 'IoA'
+                                            ? 'border-slate-500 bg-slate-200 font-semibold text-slate-900'
+                                            : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:text-slate-900'
+                                    }`}
+                                >
+                                    IoA
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setPestanaYaml('IoC');
+                                        if (reglasIoC[0]) setReglaSeleccionadaId(reglasIoC[0].id);
+                                    }}
+                                    className={`rounded-xs border px-2 py-1 transition-colors ${
+                                        pestanaYaml === 'IoC'
+                                            ? 'border-amber-500 bg-amber-100 font-semibold text-amber-900'
+                                            : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:text-slate-900'
+                                    }`}
+                                >
+                                    IoC
+                                </button>
+                                {reglaActiva && (
+                                    <span className="text-slate-600">
+                                        {reglaActiva.id.toLowerCase()}.sigma.yml
+                                    </span>
+                                )}
+                            </div>
+
                             <button
                                 type="button"
-                                onClick={() => {
-                                    setPestanaYaml('IoA');
-                                    if (reglasIoA[0]) setReglaSeleccionadaId(reglasIoA[0].id);
-                                }}
-                                className={`rounded px-2.5 py-1 font-semibold ${
-                                    pestanaYaml === 'IoA'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-slate-300 hover:bg-slate-700'
-                                }`}
+                                onClick={handleCopiarYaml}
+                                className="inline-flex items-center gap-1.5 rounded-xs border border-slate-300 bg-white px-2.5 py-1 font-mono text-xs text-slate-800 transition-colors hover:border-slate-400 hover:bg-slate-100"
                             >
-                                Regla IoA
+                                {copiado ? (
+                                    <>
+                                        <CheckIcon className="h-3.5 w-3.5 text-emerald-700" />
+                                        Copiado
+                                    </>
+                                ) : (
+                                    <>
+                                        <CopyIcon className="h-3.5 w-3.5" />
+                                        Copiar YAML
+                                    </>
+                                )}
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setPestanaYaml('IoC');
-                                    if (reglasIoC[0]) setReglaSeleccionadaId(reglasIoC[0].id);
-                                }}
-                                className={`rounded px-2.5 py-1 font-semibold ${
-                                    pestanaYaml === 'IoC'
-                                        ? 'bg-amber-600 text-white'
-                                        : 'text-slate-300 hover:bg-slate-700'
-                                }`}
-                            >
-                                Regla IoC
-                            </button>
-                            {reglaActiva && (
-                                <span className="font-mono text-slate-300">
-                                    {reglaActiva.id.toLowerCase()}.sigma.yml
-                                </span>
-                            )}
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={handleCopiarYaml}
-                            className="rounded border border-slate-600 bg-slate-700 px-3 py-1 text-xs font-medium text-white hover:bg-slate-600"
-                        >
-                            {copiado ? 'Copiado' : 'Copiar regla'}
-                        </button>
+                        <div className="overflow-x-auto p-3.5 font-mono text-xs leading-6">
+                            {lineasYaml.map((linea, idx) => {
+                                const separadorIdx = linea.indexOf(':');
+                                const tieneClave = separadorIdx > 0 && !linea.trimStart().startsWith('-');
+                                return (
+                                    <div key={idx} className="flex">
+                                        <span className="w-8 shrink-0 select-none pr-3 text-right tabular-nums text-slate-500">
+                                            {idx + 1}
+                                        </span>
+                                        {tieneClave ? (
+                                            <span className="whitespace-pre">
+                                                <span className="text-slate-900">{linea.slice(0, separadorIdx + 1)}</span>
+                                                <span className="text-emerald-700">{linea.slice(separadorIdx + 1)}</span>
+                                            </span>
+                                        ) : (
+                                            <span className="whitespace-pre text-amber-800">{linea || ' '}</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
-
-                    <div className="overflow-x-auto p-4 font-mono text-xs leading-6 text-slate-100">
-                        {lineasYaml.map((linea, idx) => (
-                            <div key={idx} className="flex">
-                                <span className="w-8 shrink-0 select-none pr-3 text-right text-slate-500">
-                                    {idx + 1}
-                                </span>
-                                <span className="whitespace-pre text-emerald-300">{linea || ' '}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                )}
             </div>
         </section>
     );

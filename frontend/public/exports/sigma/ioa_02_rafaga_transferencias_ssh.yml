@@ -1,0 +1,45 @@
+title: Transferencia interrumpida en el sistema médico (base)
+id: 0ef30b1b-fd0b-5526-afcf-00085e49722f
+name: aegis_ioa02_transferencia_cortada
+status: experimental
+description: 'Evento base: transferencia interrumpida. El texto original viene sin
+  la S (TRANFERENCIA).'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.collection
+- attack.t1213
+logsource:
+  product: aegishealth
+  service: sistema_medico
+detection:
+  seleccion:
+    action_desc: TRANFERENCIA INTERRUMPIDA
+  condition: seleccion
+falsepositives:
+- Cortes de red
+level: low
+
+---
+title: Ráfaga de transferencias interrumpidas por cuenta
+id: de8c2d7a-5a46-5a51-8eb0-630c36b945e1
+name: aegis_ioa02_rafaga_transferencias
+status: experimental
+description: '50 o más transferencias interrumpidas de una misma cuenta en 1 hora:
+  posible extracción automatizada.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.collection
+- attack.t1213
+- attack.t1074
+correlation:
+  type: event_count
+  rules:
+  - aegis_ioa02_transferencia_cortada
+  group-by:
+  - account_token
+  timespan: 1h
+  condition:
+    gte: 50
+level: high

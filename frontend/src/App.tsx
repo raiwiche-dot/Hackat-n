@@ -6,10 +6,7 @@ import {
   artefactosMock,
   auditoriaInicialMock,
   campanasMock,
-  escenariosIpeMock,
-  evidenciaIngestaMock,
   seccionesF11Mock,
-  serieHorariaMock,
 } from './mocks/mockData';
 import type { CampanaId, RegistroAuditoria } from './mocks/mockData';
 import {
@@ -22,8 +19,30 @@ import { TimelinePage } from './pages/TimelinePage';
 import { ThreatIntelPage } from './pages/ThreatIntelPage';
 import { ReportCenterPage } from './pages/ReportCenterPage';
 
+export type ModoLectura = 'simple' | 'tecnico';
+
+const infoVistaActual: Record<VistaActiva, { titulo: string; subtitulo: string }> = {
+  dashboard: {
+    titulo: 'Resumen general y mapa horario',
+    subtitulo: 'Estado de la actividad registrada, alertas detectadas y horarios de mayor movimiento',
+  },
+  timeline: {
+    titulo: 'Secuencia de eventos y privacidad',
+    subtitulo: 'Orden cronológico de cada incidente y resguardo de identidades LOPDP',
+  },
+  'threat-intel': {
+    titulo: 'Adversarios y reglas de protección',
+    subtitulo: 'Perfiles de riesgo, comportamientos detectados y exportación para alertas',
+  },
+  'report-center': {
+    titulo: 'Reporte F-11 y auditoría',
+    subtitulo: 'Las 8 secciones requeridas para entrega y verificación de integridad',
+  },
+};
+
 export function App() {
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>('dashboard');
+  const [modoLectura, setModoLectura] = useState<ModoLectura>('simple');
   const [registrosAuditoria, setRegistrosAuditoria] =
     useState<RegistroAuditoria[]>(auditoriaInicialMock);
   const [estadoSalud, setEstadoSalud] = useState<EstadoSaludApi>(saludEjemploMock);
@@ -104,8 +123,10 @@ export function App() {
     );
   };
 
+  const cabeceraVista = infoVistaActual[vistaActiva];
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#f6f8fb] text-slate-800">
+    <div className="flex min-h-screen flex-col bg-slate-100 text-slate-900 lg:flex-row">
       <HeaderConfianza
         estado={estadoSalud}
         vistaActiva={vistaActiva}
@@ -113,45 +134,103 @@ export function App() {
         usandoMocks={usandoMocks}
       />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
-        {vistaActiva === 'dashboard' && (
-          <DashboardPage
-            evidencia={evidenciaIngestaMock}
-            serieHoraria={serieHorariaMock}
-            escenarios={escenariosIpeMock}
-            onIrAuditoria={() => setVistaActiva('report-center')}
-          />
-        )}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Barra contextual superior */}
+        <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-xs sm:px-6">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 sm:text-base">
+                {cabeceraVista.titulo}
+              </h2>
+              <p className="text-xs text-slate-500">{cabeceraVista.subtitulo}</p>
+            </div>
 
-        {vistaActiva === 'timeline' && (
-          <TimelinePage
-            campanas={campanasMock}
-            onRegistrarBreakGlass={handleRegistrarBreakGlass}
-          />
-        )}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Interruptor Lectura simple vs Detalle técnico */}
+              <div
+                className="inline-flex rounded-sm border border-slate-300 bg-slate-100 p-0.5 text-xs shadow-xs"
+                role="group"
+                aria-label="Nivel de lectura"
+              >
+                <button
+                  type="button"
+                  onClick={() => setModoLectura('simple')}
+                  className={`rounded-xs px-3 py-1.5 font-semibold transition-all ${
+                    modoLectura === 'simple'
+                      ? 'bg-teal-600 text-white shadow-xs'
+                      : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Lectura simple
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModoLectura('tecnico')}
+                  className={`rounded-xs px-3 py-1.5 font-semibold transition-all ${
+                    modoLectura === 'tecnico'
+                      ? 'bg-slate-700 text-white shadow-xs'
+                      : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Detalle técnico
+                </button>
+              </div>
 
-        {vistaActiva === 'threat-intel' && (
-          <ThreatIntelPage
-            adversarios={adversariosMock}
-            artefactos={artefactosMock}
-            onExportarStix={handleExportarStix}
-          />
-        )}
+              {vistaActiva !== 'report-center' && (
+                <button
+                  type="button"
+                  onClick={() => setVistaActiva('report-center')}
+                  className="rounded-sm border border-teal-600 bg-teal-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-teal-700"
+                >
+                  Reporte F-11
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
 
-        {vistaActiva === 'report-center' && (
-          <ReportCenterPage
-            secciones={seccionesF11Mock}
-            registrosAuditoria={registrosAuditoria}
-            onRegistrarEventoAuditoria={(tipo, det) =>
-              agregarRegistroAuditoria(tipo, det)
-            }
-          />
-        )}
-      </main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6">
+          {vistaActiva === 'dashboard' && (
+            <DashboardPage
+              modoLectura={modoLectura}
+              onIrAuditoria={() => setVistaActiva('report-center')}
+              onVerLineaTiempo={() => setVistaActiva('timeline')}
+            />
+          )}
 
-      <footer className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs text-slate-500">
-        AegisHealth-CTI · Procesamiento local sobre datos sintéticos de práctica · Cumplimiento LOPDP y cero conexión con sistemas reales.
-      </footer>
+          {vistaActiva === 'timeline' && (
+            <TimelinePage
+              campanas={campanasMock}
+              modoLectura={modoLectura}
+              onRegistrarBreakGlass={handleRegistrarBreakGlass}
+            />
+          )}
+
+          {vistaActiva === 'threat-intel' && (
+            <ThreatIntelPage
+              adversarios={adversariosMock}
+              artefactos={artefactosMock}
+              modoLectura={modoLectura}
+              onExportarStix={handleExportarStix}
+            />
+          )}
+
+          {vistaActiva === 'report-center' && (
+            <ReportCenterPage
+              secciones={seccionesF11Mock}
+              registrosAuditoria={registrosAuditoria}
+              modoLectura={modoLectura}
+              onRegistrarEventoAuditoria={(tipo, det) =>
+                agregarRegistroAuditoria(tipo, det)
+              }
+            />
+          )}
+        </main>
+
+        <footer className="border-t border-slate-200 bg-white px-4 py-2.5 text-center text-[11px] text-slate-400">
+          AegisHealth-CTI · Análisis local sobre datos sintéticos de práctica · Privacidad LOPDP protegida
+        </footer>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@
   }
 
   body {
-    @apply bg-[#f6f8fb] text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900;
+    @apply bg-slate-100 text-slate-900 antialiased selection:bg-teal-200 selection:text-teal-900;
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", Arial, sans-serif;
   }
 

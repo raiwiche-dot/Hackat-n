@@ -1,0 +1,43 @@
+title: Conexión negada en el firewall (base)
+id: ca9af205-aec3-57ff-b159-c4f17d74052e
+name: aegis_ioa03_conexion_negada
+status: experimental
+description: 'Evento base: conexión negada por el firewall.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.credential-access
+logsource:
+  product: aegishealth
+  category: firewall
+detection:
+  seleccion:
+    action: negado
+  condition: seleccion
+falsepositives:
+- Equipos mal configurados
+level: low
+
+---
+title: Ráfaga de conexiones negadas al mismo puerto
+id: e7d09f37-09dc-5c7d-85c4-4d4fd245d544
+name: aegis_ioa03_rafaga_negadas
+status: experimental
+description: '100 o más conexiones negadas desde la misma IP al mismo puerto en 1
+  hora (ejemplo observado: Telnet 23/tcp).'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.credential-access
+- attack.t1110.001
+correlation:
+  type: event_count
+  rules:
+  - aegis_ioa03_conexion_negada
+  group-by:
+  - src_ip
+  - dst_port
+  timespan: 1h
+  condition:
+    gte: 100
+level: high

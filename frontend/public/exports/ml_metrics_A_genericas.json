@@ -1,0 +1,195 @@
+{
+  "modelo": "log1p + StandardScaler + IsolationForest(n_estimators=200, max_samples=20000, random_state=42) en CPU local",
+  "version_variables": "A_genericas",
+  "variables_usadas": {
+    "fw_hora": [
+      "total_eventos",
+      "negados",
+      "puertos_distintos",
+      "destinos_distintos",
+      "conexiones_misma_maquina",
+      "conexiones_externas",
+      "conexiones_remotas"
+    ],
+    "med_hora": [
+      "total_eventos",
+      "fallidos",
+      "descargas",
+      "transferencias",
+      "interrumpidas",
+      "operaciones_admin",
+      "identidades_distintas",
+      "es_nocturno"
+    ],
+    "med_periodo": [
+      "ratio_fallidos",
+      "ratio_admin",
+      "identidades_distintas",
+      "ips_distintas",
+      "ratio_nocturno",
+      "eventos_por_hora_activa"
+    ]
+  },
+  "generado": "2026-11-26T15:19:34",
+  "datos": {
+    "firewall": "data\\processed\\sample_fw_200k.parquet",
+    "sistema_medico": "data\\processed\\sample_med_200k.parquet"
+  },
+  "total_ventanas_evaluadas": {
+    "fw_hora": 166953,
+    "med_hora": 202811,
+    "med_periodo": 10016
+  },
+  "top_n_evaluado": 50,
+  "incidentes_en_top_n": "4/5",
+  "detalle_por_campana": {
+    "CAMP-2026-003": {
+      "incidente": "A - Fuerza bruta Telnet",
+      "detectado_sin_reglas": true,
+      "mejor_posicion": 1,
+      "ventanas": [
+        {
+          "tabla": "fw_hora",
+          "entidad": "USR-5387F94B394C",
+          "hora": "2026-10-10 00:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 1,
+          "de_un_total_de": 166953,
+          "anomaly_score": 1.0,
+          "en_top_n": true
+        },
+        {
+          "tabla": "med_hora",
+          "entidad": "ACC-410762D420CB",
+          "hora": "2026-10-10 00:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 19,
+          "de_un_total_de": 202811,
+          "anomaly_score": 0.9267,
+          "en_top_n": true
+        }
+      ]
+    },
+    "CAMP-2026-004": {
+      "incidente": "B - Escaneo multiservicio y spraying",
+      "detectado_sin_reglas": true,
+      "mejor_posicion": 2,
+      "ventanas": [
+        {
+          "tabla": "fw_hora",
+          "entidad": "USR-936EFE804AB3",
+          "hora": "2026-10-19 14:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 2,
+          "de_un_total_de": 166953,
+          "anomaly_score": 0.9954,
+          "en_top_n": true
+        },
+        {
+          "tabla": "med_hora",
+          "entidad": "ACC-A9764DFB78FE",
+          "hora": "2026-10-19 14:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 38,
+          "de_un_total_de": 202811,
+          "anomaly_score": 0.8979,
+          "en_top_n": true
+        }
+      ]
+    },
+    "CAMP-2026-002": {
+      "incidente": "C - Transferencia masiva por SSH",
+      "detectado_sin_reglas": true,
+      "mejor_posicion": 1,
+      "ventanas": [
+        {
+          "tabla": "fw_hora",
+          "entidad": "USR-000DE3FE2773",
+          "hora": "2026-10-07 13:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 3,
+          "de_un_total_de": 166953,
+          "anomaly_score": 0.9312,
+          "en_top_n": true
+        },
+        {
+          "tabla": "med_hora",
+          "entidad": "ACC-79FE100B6B16",
+          "hora": "2026-10-07 13:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 1,
+          "de_un_total_de": 202811,
+          "anomaly_score": 1.0,
+          "en_top_n": true
+        }
+      ]
+    },
+    "CAMP-2026-001": {
+      "incidente": "D - Exfiltracion por 8443 (desfase +12h)",
+      "detectado_sin_reglas": false,
+      "mejor_posicion": 2419,
+      "ventanas": [
+        {
+          "tabla": "fw_hora",
+          "entidad": "USR-D21470F4ED35",
+          "hora": "2026-10-24 22:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 2419,
+          "de_un_total_de": 166953,
+          "anomaly_score": 0.4994,
+          "en_top_n": false
+        },
+        {
+          "tabla": "med_hora",
+          "entidad": "ACC-DC30A0D39E5A",
+          "hora": "2026-10-24 10:00:00",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 2606,
+          "de_un_total_de": 202811,
+          "anomaly_score": 0.5121,
+          "en_top_n": false
+        }
+      ]
+    },
+    "CAMP-2026-005": {
+      "incidente": "E - Abuso de privilegios en cuentas especiales",
+      "detectado_sin_reglas": true,
+      "mejor_posicion": 5,
+      "ventanas": [
+        {
+          "tabla": "med_periodo",
+          "entidad": "ACC-877CD64A4EC0",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 5,
+          "de_un_total_de": 10016,
+          "anomaly_score": 0.8211,
+          "en_top_n": true
+        },
+        {
+          "tabla": "med_periodo",
+          "entidad": "ACC-4ED6B617541D",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 11,
+          "de_un_total_de": 10016,
+          "anomaly_score": 0.7328,
+          "en_top_n": true
+        },
+        {
+          "tabla": "med_periodo",
+          "entidad": "ACC-16A5FAA35471",
+          "encontrada_en_datos": true,
+          "posicion_en_ranking": 7,
+          "de_un_total_de": 10016,
+          "anomaly_score": 0.79,
+          "en_top_n": true
+        }
+      ]
+    }
+  },
+  "anomalias_no_confirmadas_en_top_n": {
+    "fw_hora": 47,
+    "med_hora": 47,
+    "med_periodo": 47
+  },
+  "nota": "Las anomalías no confirmadas NO son falsos positivos: quedan para revisión del analista. Los incidentes conocidos solo se usan para evaluar, nunca para entrenar."
+}

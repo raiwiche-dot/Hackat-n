@@ -1,0 +1,58 @@
+title: Conexión negada a servicio crítico (base)
+id: b8969bc5-edd7-58ca-8df4-41399b704baa
+name: aegis_ioa04_negada_puerto_critico
+status: experimental
+description: 'Evento base: conexión negada a un puerto de administración remota o
+  base de datos.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.discovery
+logsource:
+  product: aegishealth
+  category: firewall
+detection:
+  seleccion:
+    action: negado
+    dst_port:
+    - 22
+    - 23
+    - 135
+    - 137
+    - 139
+    - 445
+    - 1433
+    - 1521
+    - 3306
+    - 3389
+    - 5432
+    - 5985
+    - 5986
+    - 8471
+  condition: seleccion
+falsepositives:
+- Inventarios de red autorizados
+level: low
+
+---
+title: Escaneo de varios servicios críticos
+id: 70bb375e-7cf5-521f-8400-9049a73bafce
+name: aegis_ioa04_escaneo_multiservicio
+status: experimental
+description: Una misma IP intenta 4 o más servicios críticos distintos en 1 hora.
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.discovery
+- attack.t1046
+correlation:
+  type: value_count
+  rules:
+  - aegis_ioa04_negada_puerto_critico
+  group-by:
+  - src_ip
+  timespan: 1h
+  condition:
+    field: dst_port
+    gte: 4
+level: high

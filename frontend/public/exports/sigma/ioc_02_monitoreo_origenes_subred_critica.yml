@@ -1,0 +1,25 @@
+title: Actividad de equipos vigilados hacia el servidor médico (IoC sintético)
+id: c9c738b2-8657-5989-80e4-8fa326bad43f
+name: aegis_ioc02_origenes_vigilados
+status: experimental
+description: Dato sintético de ejercicio (Hackatón IESS 2026). No usar como inteligencia
+  real. Equipos internos que originaron los incidentes.
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.lateral-movement
+logsource:
+  product: aegishealth
+  category: firewall
+detection:
+  seleccion:
+    src_ip:
+    - 10.10.100.10
+    - 10.10.100.20
+    - 10.10.100.40
+    - 10.10.100.50
+    dst_ip: 10.10.100.30
+  condition: seleccion
+falsepositives:
+- Uso legítimo de esos equipos tras su saneamiento
+level: high

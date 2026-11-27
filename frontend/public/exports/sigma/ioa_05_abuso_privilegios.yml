@@ -1,0 +1,49 @@
+title: Operación de administración de usuarios (base)
+id: 71201be5-0b23-590a-8529-bd55b25e59b7
+name: aegis_ioa05_operacion_admin
+status: experimental
+description: 'Evento base: activar, reactivar, inactivar o cambiar el nivel de un
+  usuario.'
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.persistence
+logsource:
+  product: aegishealth
+  service: sistema_medico
+detection:
+  seleccion:
+    action_desc:
+    - USUARIOS - Activar usuario
+    - Reactivacion de usuarios
+    - Inactivacion de usuarios
+    - USUARIOS - Actualizar nivel de Usuario
+  condition: seleccion
+falsepositives:
+- Mesa de ayuda en jornadas de alta de personal
+level: low
+
+---
+title: Volumen anómalo de administración de usuarios por cuenta
+id: 81c32828-d844-5bbd-8798-f835595c8a75
+name: aegis_ioa05_abuso_privilegios
+status: experimental
+description: 100 o más operaciones de administración de usuarios de una misma cuenta
+  en 1 día.
+author: Equipo AegisHealth-CTI (Hackatón IESS 2026)
+date: '2026-11-26'
+tags:
+- attack.persistence
+- attack.t1098
+- attack.impact
+- attack.t1531
+correlation:
+  type: event_count
+  rules:
+  - aegis_ioa05_operacion_admin
+  group-by:
+  - account_token
+  timespan: 1d
+  condition:
+    gte: 100
+level: high

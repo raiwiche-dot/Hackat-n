@@ -1,0 +1,1663 @@
+{
+  "privacy_mode": "LOCAL_ONLY_HMAC_SHA256",
+  "campaigns": [
+    {
+      "campaign_code": "CAMP-2026-001",
+      "adversary_type": "HYBRID",
+      "severity": "CRITICA",
+      "anomaly_score": 0.7581,
+      "first_seen": "2026-10-24 22:40:00",
+      "last_seen": "2026-10-24 22:40:30",
+      "summary": "Salida de datos hacia IP externa",
+      "mitre_techniques": [
+        {
+          "id": "T1021.004",
+          "name": "Remote Services: SSH",
+          "tactic": "Lateral Movement",
+          "url": "https://attack.mitre.org/techniques/T1021/004/"
+        },
+        {
+          "id": "T1048.002",
+          "name": "Exfiltration Over Asymmetric Encrypted Non-C2 Protocol",
+          "tactic": "Exfiltration",
+          "url": "https://attack.mitre.org/techniques/T1048/002/"
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Defense Evasion, Persistence, Privilege Escalation, Initial Access",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        },
+        {
+          "id": "T1213",
+          "name": "Data from Information Repositories",
+          "tactic": "Collection",
+          "url": "https://attack.mitre.org/techniques/T1213/"
+        }
+      ],
+      "iocs": {
+        "source_ips": [
+          "10.10.100.40"
+        ],
+        "destination_ips": [
+          "186.46.219.18"
+        ],
+        "actor_tokens": [
+          "USR-D21470F4ED35"
+        ],
+        "account_tokens": [
+          "ACC-DC30A0D39E5A"
+        ]
+      },
+      "ioas": [
+        "IOA-05"
+      ],
+      "hallazgos": [
+        "Conexión permitida de 10.10.100.40 hacia la IP pública 186.46.219.18:8443. Secuencia completa: acceso SSH al servidor, actividad del mismo usuario en el sistema médico (INGRESO SIST_MED_IESS, DESCARGA EXITOSA) y salida externa."
+      ],
+      "evidence_refs": [
+        {
+          "dataset": "firewall",
+          "archivo": "sample_fw_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 2,
+          "primeras_filas": [
+            167689,
+            167739
+          ]
+        }
+      ]
+    },
+    {
+      "campaign_code": "CAMP-2026-002",
+      "adversary_type": "ACTOR_CON_PRESENCIA_INTERNA",
+      "severity": "ALTA",
+      "anomaly_score": 1.0,
+      "first_seen": "2026-10-07 13:00:00",
+      "last_seen": "2026-10-07 13:00:45",
+      "summary": "Sesiones SSH masivas | Transferencias masivas interrumpidas",
+      "mitre_techniques": [
+        {
+          "id": "T1021.004",
+          "name": "Remote Services: SSH",
+          "tactic": "Lateral Movement",
+          "url": "https://attack.mitre.org/techniques/T1021/004/"
+        },
+        {
+          "id": "T1074",
+          "name": "Data Staged",
+          "tactic": "Collection",
+          "url": "https://attack.mitre.org/techniques/T1074/"
+        },
+        {
+          "id": "T1213",
+          "name": "Data from Information Repositories",
+          "tactic": "Collection",
+          "url": "https://attack.mitre.org/techniques/T1213/"
+        }
+      ],
+      "iocs": {
+        "source_ips": [
+          "10.10.100.50"
+        ],
+        "destination_ips": [
+          "10.10.100.30"
+        ],
+        "actor_tokens": [
+          "USR-000DE3FE2773"
+        ],
+        "account_tokens": [
+          "ACC-79FE100B6B16"
+        ]
+      },
+      "ioas": [
+        "IOA-04",
+        "IOA-09"
+      ],
+      "hallazgos": [
+        "2970 transferencias interrumpidas y 30 exitosas de la cuenta ACC-79FE100B6B16 en una hora.",
+        "30 conexiones SSH desde 10.10.100.50 en una hora (umbral 10)."
+      ],
+      "evidence_refs": [
+        {
+          "dataset": "sistema_medico",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 3000,
+          "primeras_filas": [
+            40928,
+            40929,
+            40930,
+            40931,
+            40935,
+            40936,
+            40937,
+            40938,
+            40939,
+            40940,
+            40941,
+            40942,
+            40943,
+            40944,
+            40945,
+            40946,
+            40947,
+            40948,
+            40949,
+            40950
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 30,
+          "primeras_filas": [
+            39752,
+            39753,
+            39754,
+            39755,
+            39756,
+            39757,
+            39758,
+            39759,
+            39760,
+            39761,
+            39762,
+            39763,
+            39764,
+            39765,
+            39766,
+            39769,
+            39770,
+            39771,
+            39772,
+            39773
+          ]
+        }
+      ]
+    },
+    {
+      "campaign_code": "CAMP-2026-003",
+      "adversary_type": "ACTOR_CON_PRESENCIA_INTERNA",
+      "severity": "ALTA",
+      "anomaly_score": 1.0,
+      "first_seen": "2026-10-10 00:00:00",
+      "last_seen": "2026-10-10 00:05:00",
+      "summary": "Fuerza bruta contra una cuenta | Ráfaga de conexiones negadas",
+      "mitre_techniques": [
+        {
+          "id": "T1021",
+          "name": "Remote Services",
+          "tactic": "Lateral Movement",
+          "url": "https://attack.mitre.org/techniques/T1021/"
+        },
+        {
+          "id": "T1110.001",
+          "name": "Brute Force: Password Guessing",
+          "tactic": "Credential Access",
+          "url": "https://attack.mitre.org/techniques/T1110/001/"
+        }
+      ],
+      "iocs": {
+        "source_ips": [
+          "10.10.100.10"
+        ],
+        "destination_ips": [],
+        "actor_tokens": [
+          "USR-5387F94B394C"
+        ],
+        "account_tokens": [
+          "ACC-410762D420CB"
+        ]
+      },
+      "ioas": [
+        "IOA-01",
+        "IOA-03"
+      ],
+      "hallazgos": [
+        "2000 conexiones negadas al puerto 23 desde 10.10.100.10 en una hora (umbral 100).",
+        "2000 accesos fallidos a la cuenta ACC-410762D420CB en una hora (umbral 50)."
+      ],
+      "evidence_refs": [
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 2000,
+          "primeras_filas": [
+            57164,
+            57165,
+            57166,
+            57167,
+            57168,
+            57169,
+            57170,
+            57171,
+            57172,
+            57173,
+            57174,
+            57179,
+            57180,
+            57181,
+            57182,
+            57183,
+            57184,
+            57185,
+            57189,
+            57190
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 2000,
+          "primeras_filas": [
+            61673,
+            61674,
+            61675,
+            61676,
+            61677,
+            61680,
+            61681,
+            61682,
+            61683,
+            61684,
+            61685,
+            61686,
+            61687,
+            61690,
+            61691,
+            61692,
+            61693,
+            61694,
+            61695,
+            61698
+          ]
+        }
+      ]
+    },
+    {
+      "campaign_code": "CAMP-2026-004",
+      "adversary_type": "ACTOR_CON_PRESENCIA_INTERNA",
+      "severity": "ALTA",
+      "anomaly_score": 0.9954,
+      "first_seen": "2026-10-01 06:33:53",
+      "last_seen": "2026-10-31 21:49:22",
+      "summary": "Cuenta usada por varias identidades | Escaneo de servicios críticos | Fuerza bruta contra una cuenta | Registros con IP malformada | Ráfaga de conexiones negadas",
+      "mitre_techniques": [
+        {
+          "id": "T1021.001",
+          "name": "Remote Services: Remote Desktop Protocol",
+          "tactic": "Lateral Movement",
+          "url": "https://attack.mitre.org/techniques/T1021/001/"
+        },
+        {
+          "id": "T1021.002",
+          "name": "Remote Services: SMB/Windows Admin Shares",
+          "tactic": "Lateral Movement",
+          "url": "https://attack.mitre.org/techniques/T1021/002/"
+        },
+        {
+          "id": "T1046",
+          "name": "Network Service Discovery",
+          "tactic": "Discovery",
+          "url": "https://attack.mitre.org/techniques/T1046/"
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Defense Evasion, Persistence, Privilege Escalation, Initial Access",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        },
+        {
+          "id": "T1110.001",
+          "name": "Brute Force: Password Guessing",
+          "tactic": "Credential Access",
+          "url": "https://attack.mitre.org/techniques/T1110/001/"
+        },
+        {
+          "id": "T1110.003",
+          "name": "Brute Force: Password Spraying",
+          "tactic": "Credential Access",
+          "url": "https://attack.mitre.org/techniques/T1110/003/"
+        }
+      ],
+      "iocs": {
+        "source_ips": [
+          "10.10.100.20"
+        ],
+        "destination_ips": [],
+        "actor_tokens": [
+          "USR-936EFE804AB3"
+        ],
+        "account_tokens": [
+          "ACC-A9764DFB78FE"
+        ]
+      },
+      "ioas": [
+        "IOA-01",
+        "IOA-02",
+        "IOA-03",
+        "IOA-06",
+        "IOA-08"
+      ],
+      "hallazgos": [
+        "250 conexiones negadas al puerto 137 desde 10.10.100.20 en una hora (umbral 100).",
+        "250 conexiones negadas al puerto 445 desde 10.10.100.20 en una hora (umbral 100).",
+        "250 conexiones negadas al puerto 3389 desde 10.10.100.20 en una hora (umbral 100).",
+        "250 conexiones negadas al puerto 8471 desde 10.10.100.20 en una hora (umbral 100).",
+        "10.10.100.20 intentó 4 servicios críticos distintos [137, 445, 3389, 8471] en una hora.",
+        "1000 accesos fallidos a la cuenta ACC-A9764DFB78FE en una hora (umbral 50).",
+        "La cuenta ACC-A9764DFB78FE fue usada por 119 identidades distintas (lo normal es 1).",
+        "11 eventos de la cuenta ACC-A9764DFB78FE con IP escrita sin puntos (formato anómalo)."
+      ],
+      "evidence_refs": [
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 250,
+          "primeras_filas": [
+            125267,
+            125273,
+            125274,
+            125275,
+            125276,
+            125277,
+            125283,
+            125293,
+            125306,
+            125315,
+            125316,
+            125322,
+            125324,
+            125329,
+            125330,
+            125345,
+            125349,
+            125361,
+            125363,
+            125365
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 250,
+          "primeras_filas": [
+            125270,
+            125280,
+            125284,
+            125287,
+            125289,
+            125299,
+            125303,
+            125307,
+            125310,
+            125312,
+            125313,
+            125317,
+            125320,
+            125321,
+            125328,
+            125333,
+            125337,
+            125344,
+            125347,
+            125357
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 250,
+          "primeras_filas": [
+            125268,
+            125269,
+            125278,
+            125279,
+            125285,
+            125286,
+            125290,
+            125292,
+            125295,
+            125300,
+            125302,
+            125308,
+            125319,
+            125327,
+            125331,
+            125332,
+            125334,
+            125336,
+            125339,
+            125340
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 250,
+          "primeras_filas": [
+            125271,
+            125272,
+            125281,
+            125282,
+            125288,
+            125291,
+            125294,
+            125296,
+            125301,
+            125304,
+            125305,
+            125309,
+            125311,
+            125314,
+            125318,
+            125323,
+            125325,
+            125335,
+            125338,
+            125342
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": "sample_fw_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1000,
+          "primeras_filas": [
+            125267,
+            125268,
+            125269,
+            125270,
+            125271,
+            125272,
+            125273,
+            125274,
+            125275,
+            125276,
+            125277,
+            125278,
+            125279,
+            125280,
+            125281,
+            125282,
+            125283,
+            125284,
+            125285,
+            125286
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": null,
+          "referencia": "fila_origen",
+          "total_filas": 1000,
+          "primeras_filas": [
+            132077,
+            132081,
+            132089,
+            132092,
+            132093,
+            132094,
+            132099,
+            132100,
+            132103,
+            132104,
+            132108,
+            132122,
+            132126,
+            132132,
+            132133,
+            132142,
+            132143,
+            132144,
+            132148,
+            132159
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1118,
+          "primeras_filas": [
+            1677,
+            3379,
+            6100,
+            6571,
+            6719,
+            9738,
+            15159,
+            15247,
+            16224,
+            17197,
+            17607,
+            18746,
+            20325,
+            20714,
+            21682,
+            22984,
+            26269,
+            26996,
+            29614,
+            33115
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 11,
+          "primeras_filas": [
+            1677,
+            18746,
+            94825,
+            94826,
+            100938,
+            114253,
+            122085,
+            122760,
+            139868,
+            165560,
+            207377
+          ]
+        }
+      ]
+    },
+    {
+      "campaign_code": "CAMP-2026-005",
+      "adversary_type": "INSIDER_THREAT",
+      "severity": "ALTA",
+      "anomaly_score": 0.9752,
+      "first_seen": "2026-10-01 00:20:43",
+      "last_seen": "2026-10-31 23:57:54",
+      "summary": "Abuso de privilegios administrativos | Cuenta usada por varias identidades | Registros con IP malformada",
+      "mitre_techniques": [
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Defense Evasion, Persistence, Privilege Escalation, Initial Access",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        },
+        {
+          "id": "T1098",
+          "name": "Account Manipulation",
+          "tactic": "Persistence, Privilege Escalation",
+          "url": "https://attack.mitre.org/techniques/T1098/"
+        },
+        {
+          "id": "T1531",
+          "name": "Account Access Removal",
+          "tactic": "Impact",
+          "url": "https://attack.mitre.org/techniques/T1531/"
+        }
+      ],
+      "iocs": {
+        "source_ips": [],
+        "destination_ips": [],
+        "actor_tokens": [],
+        "account_tokens": [
+          "ACC-0639B2D753A4",
+          "ACC-16A5FAA35471",
+          "ACC-1B3035A0DF46",
+          "ACC-2CF46526E77B",
+          "ACC-47DB66623372",
+          "ACC-4ED6B617541D",
+          "ACC-4F8BEF63C78C",
+          "ACC-69C5B524099D",
+          "ACC-7DE8F669601E",
+          "ACC-877CD64A4EC0",
+          "ACC-CAEF7516B5C5",
+          "ACC-CCABDA8231E1"
+        ]
+      },
+      "ioas": [
+        "IOA-06",
+        "IOA-07",
+        "IOA-08"
+      ],
+      "hallazgos": [
+        "La cuenta ACC-0639B2D753A4 fue usada por 1737 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-0639B2D753A4 hizo 1929 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 975, 'Reactivacion de usuarios': 954}.",
+        "186 eventos de la cuenta ACC-0639B2D753A4 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-877CD64A4EC0 fue usada por 1399 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-877CD64A4EC0 hizo 1533 operaciones de administración de usuarios (100% de su actividad): {'Reactivacion de usuarios': 826, 'Inactivacion de usuarios': 707}.",
+        "137 eventos de la cuenta ACC-877CD64A4EC0 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-16A5FAA35471 fue usada por 1020 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-16A5FAA35471 hizo 1098 operaciones de administración de usuarios (100% de su actividad): {'USUARIOS - Activar usuario': 1098}.",
+        "100 eventos de la cuenta ACC-16A5FAA35471 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-7DE8F669601E fue usada por 712 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-7DE8F669601E hizo 741 operaciones de administración de usuarios (100% de su actividad): {'Reactivacion de usuarios': 385, 'Inactivacion de usuarios': 356}.",
+        "67 eventos de la cuenta ACC-7DE8F669601E con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-4F8BEF63C78C fue usada por 707 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-4F8BEF63C78C hizo 733 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 378, 'Reactivacion de usuarios': 355}.",
+        "64 eventos de la cuenta ACC-4F8BEF63C78C con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-47DB66623372 fue usada por 681 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-47DB66623372 hizo 708 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 359, 'Reactivacion de usuarios': 349}.",
+        "66 eventos de la cuenta ACC-47DB66623372 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-4ED6B617541D fue usada por 247 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-4ED6B617541D hizo 249 operaciones de administración de usuarios (100% de su actividad): {'USUARIOS - Actualizar nivel de Usuario': 131, 'Reactivacion de usuarios': 118}.",
+        "22 eventos de la cuenta ACC-4ED6B617541D con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-69C5B524099D fue usada por 243 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-69C5B524099D hizo 246 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 126, 'Reactivacion de usuarios': 120}.",
+        "21 eventos de la cuenta ACC-69C5B524099D con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-1B3035A0DF46 fue usada por 221 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-1B3035A0DF46 hizo 225 operaciones de administración de usuarios (100% de su actividad): {'Reactivacion de usuarios': 118, 'Inactivacion de usuarios': 107}.",
+        "24 eventos de la cuenta ACC-1B3035A0DF46 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-2CF46526E77B fue usada por 108 identidades distintas (lo normal es 1).",
+        "La cuenta ACC-2CF46526E77B hizo 108 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 108}.",
+        "15 eventos de la cuenta ACC-2CF46526E77B con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-CAEF7516B5C5 hizo 335 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 215, 'Reactivacion de usuarios': 120}.",
+        "29 eventos de la cuenta ACC-CAEF7516B5C5 con IP escrita sin puntos (formato anómalo).",
+        "La cuenta ACC-CCABDA8231E1 hizo 476 operaciones de administración de usuarios (100% de su actividad): {'Inactivacion de usuarios': 256, 'Reactivacion de usuarios': 220}.",
+        "45 eventos de la cuenta ACC-CCABDA8231E1 con IP escrita sin puntos (formato anómalo).",
+        "493 conexiones del firewall con IP destino escrita sin puntos."
+      ],
+      "evidence_refs": [
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1929,
+          "primeras_filas": [
+            96,
+            115,
+            257,
+            260,
+            279,
+            297,
+            397,
+            426,
+            585,
+            693,
+            714,
+            780,
+            837,
+            934,
+            1047,
+            1198,
+            1341,
+            1430,
+            1722,
+            1766
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1929,
+          "primeras_filas": [
+            96,
+            115,
+            257,
+            260,
+            279,
+            297,
+            397,
+            426,
+            585,
+            693,
+            714,
+            780,
+            837,
+            934,
+            1047,
+            1198,
+            1341,
+            1430,
+            1722,
+            1766
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 186,
+          "primeras_filas": [
+            297,
+            585,
+            837,
+            1783,
+            2244,
+            7947,
+            8130,
+            8883,
+            12567,
+            12733,
+            13112,
+            13604,
+            14839,
+            14940,
+            15154,
+            15933,
+            16005,
+            17547,
+            18268,
+            18743
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1533,
+          "primeras_filas": [
+            340,
+            423,
+            464,
+            468,
+            490,
+            760,
+            1024,
+            1081,
+            1133,
+            1173,
+            1309,
+            1316,
+            1782,
+            1822,
+            1859,
+            1884,
+            1885,
+            1942,
+            1974,
+            2587
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1533,
+          "primeras_filas": [
+            340,
+            423,
+            464,
+            468,
+            490,
+            760,
+            1024,
+            1081,
+            1133,
+            1173,
+            1309,
+            1316,
+            1782,
+            1822,
+            1859,
+            1884,
+            1885,
+            1942,
+            1974,
+            2587
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 137,
+          "primeras_filas": [
+            1822,
+            1859,
+            4181,
+            6871,
+            8052,
+            8068,
+            8346,
+            14253,
+            14296,
+            14520,
+            15909,
+            16278,
+            17838,
+            20081,
+            20396,
+            20436,
+            23318,
+            27583,
+            30220,
+            31366
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1098,
+          "primeras_filas": [
+            980,
+            1068,
+            1297,
+            1413,
+            1876,
+            1999,
+            2522,
+            2539,
+            2731,
+            2842,
+            2843,
+            2853,
+            2884,
+            2885,
+            2886,
+            3310,
+            3697,
+            3736,
+            3866,
+            3910
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 1098,
+          "primeras_filas": [
+            980,
+            1068,
+            1297,
+            1413,
+            1876,
+            1999,
+            2522,
+            2539,
+            2731,
+            2842,
+            2843,
+            2853,
+            2884,
+            2885,
+            2886,
+            3310,
+            3697,
+            3736,
+            3866,
+            3910
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 100,
+          "primeras_filas": [
+            2886,
+            5456,
+            10044,
+            10681,
+            11596,
+            17739,
+            19230,
+            19725,
+            20460,
+            20518,
+            20781,
+            21258,
+            26023,
+            28417,
+            29791,
+            31381,
+            33147,
+            33751,
+            34841,
+            36153
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 741,
+          "primeras_filas": [
+            113,
+            264,
+            702,
+            709,
+            911,
+            986,
+            987,
+            1104,
+            1731,
+            1754,
+            2108,
+            2699,
+            2929,
+            3180,
+            3761,
+            3975,
+            4089,
+            4443,
+            4446,
+            4466
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 741,
+          "primeras_filas": [
+            113,
+            264,
+            702,
+            709,
+            911,
+            986,
+            987,
+            1104,
+            1731,
+            1754,
+            2108,
+            2699,
+            2929,
+            3180,
+            3761,
+            3975,
+            4089,
+            4443,
+            4446,
+            4466
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 67,
+          "primeras_filas": [
+            4525,
+            10546,
+            11184,
+            14637,
+            15253,
+            17548,
+            20165,
+            21135,
+            22538,
+            23903,
+            24726,
+            28755,
+            29899,
+            30444,
+            33537,
+            34519,
+            34752,
+            35897,
+            37333,
+            50409
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 733,
+          "primeras_filas": [
+            391,
+            967,
+            1491,
+            1615,
+            1930,
+            2253,
+            2614,
+            2973,
+            2974,
+            2975,
+            2976,
+            3093,
+            3337,
+            3401,
+            3611,
+            4628,
+            5233,
+            5933,
+            6147,
+            6754
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 733,
+          "primeras_filas": [
+            391,
+            967,
+            1491,
+            1615,
+            1930,
+            2253,
+            2614,
+            2973,
+            2974,
+            2975,
+            2976,
+            3093,
+            3337,
+            3401,
+            3611,
+            4628,
+            5233,
+            5933,
+            6147,
+            6754
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 64,
+          "primeras_filas": [
+            1615,
+            2976,
+            9223,
+            9945,
+            15286,
+            15402,
+            24224,
+            25437,
+            27428,
+            31983,
+            32465,
+            33398,
+            34909,
+            39371,
+            39415,
+            46472,
+            51383,
+            53834,
+            58896,
+            59164
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 708,
+          "primeras_filas": [
+            93,
+            762,
+            798,
+            1535,
+            1614,
+            1626,
+            1796,
+            2571,
+            2911,
+            2912,
+            3315,
+            3382,
+            3383,
+            3683,
+            3684,
+            3685,
+            3686,
+            4377,
+            4810,
+            5800
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 708,
+          "primeras_filas": [
+            93,
+            762,
+            798,
+            1535,
+            1614,
+            1626,
+            1796,
+            2571,
+            2911,
+            2912,
+            3315,
+            3382,
+            3383,
+            3683,
+            3684,
+            3685,
+            3686,
+            4377,
+            4810,
+            5800
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 66,
+          "primeras_filas": [
+            93,
+            2571,
+            3383,
+            9354,
+            9546,
+            9963,
+            14365,
+            14967,
+            15221,
+            16220,
+            20363,
+            20558,
+            21079,
+            24300,
+            26053,
+            28041,
+            28248,
+            30789,
+            31857,
+            32829
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 249,
+          "primeras_filas": [
+            457,
+            1230,
+            1620,
+            2079,
+            2139,
+            2141,
+            2176,
+            2407,
+            6451,
+            7094,
+            7944,
+            9583,
+            10084,
+            11038,
+            13961,
+            14446,
+            14487,
+            14488,
+            14490,
+            14535
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 249,
+          "primeras_filas": [
+            457,
+            1230,
+            1620,
+            2079,
+            2139,
+            2141,
+            2176,
+            2407,
+            6451,
+            7094,
+            7944,
+            9583,
+            10084,
+            11038,
+            13961,
+            14446,
+            14487,
+            14488,
+            14490,
+            14535
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 22,
+          "primeras_filas": [
+            2176,
+            2407,
+            7094,
+            9583,
+            18419,
+            30911,
+            50754,
+            59999,
+            73544,
+            85642,
+            87537,
+            95960,
+            104460,
+            105416,
+            109329,
+            111000,
+            145475,
+            160629,
+            162486,
+            164182
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 246,
+          "primeras_filas": [
+            318,
+            1255,
+            2500,
+            3731,
+            3933,
+            6043,
+            6837,
+            8488,
+            8838,
+            9012,
+            9013,
+            9258,
+            10151,
+            10791,
+            12918,
+            15190,
+            15194,
+            15195,
+            16988,
+            17158
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 246,
+          "primeras_filas": [
+            318,
+            1255,
+            2500,
+            3731,
+            3933,
+            6043,
+            6837,
+            8488,
+            8838,
+            9012,
+            9013,
+            9258,
+            10151,
+            10791,
+            12918,
+            15190,
+            15194,
+            15195,
+            16988,
+            17158
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 21,
+          "primeras_filas": [
+            3731,
+            25548,
+            27216,
+            45863,
+            51870,
+            57479,
+            57583,
+            93139,
+            116794,
+            122186,
+            123016,
+            123018,
+            129141,
+            150099,
+            156746,
+            163171,
+            163927,
+            171755,
+            185321,
+            194792
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 225,
+          "primeras_filas": [
+            169,
+            2170,
+            2270,
+            2628,
+            3219,
+            5605,
+            6219,
+            6603,
+            6823,
+            7837,
+            9306,
+            9307,
+            9308,
+            10079,
+            11707,
+            11967,
+            12538,
+            13087,
+            14516,
+            15102
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 225,
+          "primeras_filas": [
+            169,
+            2170,
+            2270,
+            2628,
+            3219,
+            5605,
+            6219,
+            6603,
+            6823,
+            7837,
+            9306,
+            9307,
+            9308,
+            10079,
+            11707,
+            11967,
+            12538,
+            13087,
+            14516,
+            15102
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 24,
+          "primeras_filas": [
+            7837,
+            14516,
+            15943,
+            29948,
+            30558,
+            80078,
+            88895,
+            92669,
+            99989,
+            100929,
+            113860,
+            120111,
+            122534,
+            124860,
+            145029,
+            163204,
+            166617,
+            171715,
+            172729,
+            184066
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 108,
+          "primeras_filas": [
+            3078,
+            3079,
+            5504,
+            6502,
+            12022,
+            12131,
+            12273,
+            15393,
+            17506,
+            20780,
+            21449,
+            22125,
+            25264,
+            25286,
+            26191,
+            27241,
+            27416,
+            32507,
+            33379,
+            33380
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 108,
+          "primeras_filas": [
+            3078,
+            3079,
+            5504,
+            6502,
+            12022,
+            12131,
+            12273,
+            15393,
+            17506,
+            20780,
+            21449,
+            22125,
+            25264,
+            25286,
+            26191,
+            27241,
+            27416,
+            32507,
+            33379,
+            33380
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 15,
+          "primeras_filas": [
+            6502,
+            12022,
+            21449,
+            55435,
+            76743,
+            76960,
+            92626,
+            101267,
+            105714,
+            157274,
+            179976,
+            186043,
+            186102,
+            209529,
+            217960
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 335,
+          "primeras_filas": [
+            87,
+            111,
+            1694,
+            3268,
+            3491,
+            4489,
+            5279,
+            5355,
+            6365,
+            6811,
+            7033,
+            10091,
+            10092,
+            10237,
+            11421,
+            11422,
+            12392,
+            13763,
+            13798,
+            16770
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 29,
+          "primeras_filas": [
+            3491,
+            11421,
+            31670,
+            33561,
+            34229,
+            36190,
+            58425,
+            59482,
+            60569,
+            82986,
+            93168,
+            96851,
+            98387,
+            98615,
+            100684,
+            100907,
+            106873,
+            115687,
+            116842,
+            123617
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 476,
+          "primeras_filas": [
+            239,
+            1519,
+            1808,
+            2530,
+            3041,
+            3363,
+            3474,
+            4769,
+            5287,
+            5288,
+            5289,
+            5792,
+            6188,
+            6547,
+            6690,
+            7379,
+            7998,
+            7999,
+            8247,
+            9419
+          ]
+        },
+        {
+          "dataset": "sistema_medico",
+          "archivo": "sample_med_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 45,
+          "primeras_filas": [
+            5288,
+            6188,
+            13585,
+            29819,
+            30352,
+            50094,
+            53693,
+            57045,
+            57113,
+            58662,
+            59992,
+            74772,
+            78560,
+            80658,
+            86617,
+            88298,
+            92912,
+            93708,
+            102211,
+            103540
+          ]
+        },
+        {
+          "dataset": "firewall",
+          "archivo": "sample_fw_200k.parquet",
+          "referencia": "fila_origen",
+          "total_filas": 493,
+          "primeras_filas": [
+            1582,
+            2227,
+            2875,
+            3102,
+            3444,
+            3490,
+            3533,
+            4510,
+            4683,
+            6024,
+            6082,
+            6986,
+            7166,
+            7533,
+            7713,
+            8208,
+            8316,
+            8592,
+            9883,
+            10011
+          ]
+        }
+      ]
+    }
+  ],
+  "escenarios_ipe": {
+    "metodologia": "IPE: 1) definir el entorno, 2) describir sus efectos, 3) evaluar la amenaza, 4) determinar los cursos de acción del adversario.",
+    "ESCENARIO_MAS_PROBABLE": {
+      "descripcion": "Abuso interno persistente de privilegios y manipulación de cuentas especiales (cuentas usadas por cientos de identidades, activaciones y reactivaciones masivas), acompañado de reconocimiento y fuerza bruta desde equipos internos.",
+      "campanas": [
+        "CAMP-2026-003",
+        "CAMP-2026-004",
+        "CAMP-2026-005"
+      ],
+      "por_que_es_probable": "Es la actividad con más volumen y dura todo el periodo; usa cuentas válidas, lo que la hace difícil de distinguir del trabajo normal."
+    },
+    "ESCENARIO_MAS_PELIGROSO": {
+      "descripcion": "Cadena multifase: el actor usa cuentas válidas y acceso SSH al servidor médico, extrae información (transferencias masivas y descarga) y la envía a una IP externa por 8443, lo que habilita extorsión o venta de datos de salud.",
+      "campanas": [
+        "CAMP-2026-001",
+        "CAMP-2026-002",
+        "CAMP-2026-005"
+      ],
+      "vinculo_005_a_001": "POSIBLE (no probable): solo 1 de las 811 conexiones al puerto 8443 sale a la IP externa (evidencias.json de Rol 1). Calificar con la escala Admiralty."
+    }
+  }
+}
